@@ -1,0 +1,26 @@
+.seat {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    text-align: center;
+    line-height: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.seat.available {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.seat.selected {
+    background-color: #FFC107;
+    color: black;
+}
+
+.seat.occupied {
+    background-color: #E91E63;
+    color: white;
+    cursor: not-allowed;
+}
