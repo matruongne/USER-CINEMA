@@ -38,9 +38,11 @@ const Header = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-4">
+          
           <button className="bg-[#FFD700] text-black font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-[#FFC107]">
             ĐẶT VÉ NGAY
           </button>
+          
           <button className="bg-[#9C27B0] text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-[#6A1B9A]">
             ĐẶT BẮP NƯỚC
           </button>

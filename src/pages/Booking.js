@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import movies from "../data/movies";
-import "../styles/seats.css"; // Import CSS để cải thiện giao diện ghế
+import "../styles/seats.css"; // Import CSS cho ghế ngồi
 
 const TICKET_PRICES = {
     normal: 50000,
