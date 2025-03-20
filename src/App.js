@@ -8,6 +8,9 @@ import QuickBooking from "./components/QuickBooking/quickbooking";
 import Showtimes from "./components/Showtime/Showtime";
 import MovieDetail from "./pages/MovieDetail";
 import Booking from "./pages/Booking";
+import ServiceDetail from "./pages/ServiceDetail";
+import EventRentalPage from "./pages/EventRentalPage";
+import AboutUs from "./pages/AboutUs"
 
 const App = () => {
     return (
@@ -23,6 +26,10 @@ const App = () => {
               <Route path="/showtime" element={<Showtimes />} />
               <Route path="/movie/:id" element={<MovieDetail />} />
               <Route path="/booking/:id" element={<Booking />} />
+              <Route path="/service/:service" element={<ServiceDetail />} />
+              <Route path="/service-detail/:service" element={<ServiceDetail />} />
+              <Route path="/event-rental" element={<EventRentalPage />} />
+              <Route path="/about-us" element={<AboutUs />} />
 
             </Routes>
           </div>

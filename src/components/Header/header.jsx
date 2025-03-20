@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Search, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom"; // Import Link từ react-router-dom
 
 const cinemas = [
@@ -15,6 +16,7 @@ const cinemas = [
 
 const Header = () => {
   const [isCinemaOpen, setIsCinemaOpen] = useState(false);
+  const navigate = useNavigate(); // Thêm navigate để điều hướng
 
   return (
     <header className="bg-[#0C1C36] text-white p-4 shadow-md relative z-50">
@@ -22,7 +24,11 @@ const Header = () => {
         {/* Logo có link về trang chủ */}
         <div className="flex items-center">
           <Link to="/">
-            <img src="/logo.png" alt="Cinestar Logo" className="h-12 mr-2 cursor-pointer" />
+            <img
+              src="/logo.png"
+              alt="Cinestar Logo"
+              className="h-12 mr-2 cursor-pointer"
+            />
           </Link>
         </div>
 
@@ -38,12 +44,19 @@ const Header = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-4">
-          
-          <button className="bg-[#FFD700] text-black font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-[#FFC107]">
+          {/* Nút đặt vé */}
+          <button
+            onClick={() => navigate("/booking")}
+            className="bg-[#FFD700] text-black font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-[#FFC107]"
+          >
             ĐẶT VÉ NGAY
           </button>
-          
-          <button className="bg-[#9C27B0] text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-[#6A1B9A]">
+
+          {/* Nút đặt bắp nước */}
+          <button
+            onClick={() => navigate("/concession")}
+            className="bg-[#9C27B0] text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-[#6A1B9A]"
+          >
             ĐẶT BẮP NƯỚC
           </button>
 
@@ -55,13 +68,22 @@ const Header = () => {
 
             {/* Dropdown Menu */}
             <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-              <Link to="/profile" className="block px-4 py-2 hover:bg-gray-200 transition-all duration-200">
+              <Link
+                to="/profile"
+                className="block px-4 py-2 hover:bg-gray-200 transition-all duration-200"
+              >
                 Hồ sơ
               </Link>
-              <Link to="/settings" className="block px-4 py-2 hover:bg-gray-200 transition-all duration-200">
+              <Link
+                to="/settings"
+                className="block px-4 py-2 hover:bg-gray-200 transition-all duration-200"
+              >
                 Cài đặt
               </Link>
-              <Link to="/logout" className="block px-4 py-2 text-red-500 hover:bg-gray-200 transition-all duration-200">
+              <Link
+                to="/logout"
+                className="block px-4 py-2 text-red-500 hover:bg-gray-200 transition-all duration-200"
+              >
                 Đăng xuất
               </Link>
             </div>
@@ -98,13 +120,36 @@ const Header = () => {
           )}
         </div>
 
-        <Link to="/showtime" className="flex items-center gap-2 hover:text-white transition-all duration-300">
+        <Link
+          to="/showtime"
+          className="flex items-center gap-2 hover:text-white transition-all duration-300"
+        >
           📅 Lịch chiếu
         </Link>
-        <Link to="#" className="hover:text-white transition-all duration-300">Khuyến mãi</Link>
-        <Link to="#" className="hover:text-white transition-all duration-300">Thuê sự kiện</Link>
-        <Link to="#" className="hover:text-white transition-all duration-300">Tất cả các giải trí</Link>
-        <Link to="#" className="hover:text-white transition-all duration-300">Giới thiệu</Link>
+        <Link
+          to="/promotions"
+          className="hover:text-white transition-all duration-300"
+        >
+          Khuyến mãi
+        </Link>
+        <Link
+          to="/event-rental"
+          className="hover:text-white transition-all duration-300"
+        >
+          Thuê sự kiện
+        </Link>
+        <Link
+          to="/entertainment"
+          className="hover:text-white transition-all duration-300"
+        >
+          Tất cả các giải trí
+        </Link>
+        <Link
+          to="/about-us"
+          className="hover:text-white transition-all duration-300"
+        >
+          Giới thiệu
+        </Link>
       </nav>
     </header>
   );
