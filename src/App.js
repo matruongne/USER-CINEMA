@@ -11,6 +11,10 @@ import Booking from "./pages/Booking";
 import ServiceDetail from "./pages/ServiceDetail";
 import EventRentalPage from "./pages/EventRentalPage";
 import AboutUs from "./pages/AboutUs"
+import PromotionsList from "./components/Promotion/PromotionsList";
+import PromotionDetail from "./components/Promotion/PromotionDetail";
+import EntertainmentList from "./components/Entertainment/EntertainmentList";
+import EntertainmentDetail from "./components/Entertainment/EntertainmentDetail";
 
 const App = () => {
     return (
@@ -30,7 +34,10 @@ const App = () => {
               <Route path="/service-detail/:service" element={<ServiceDetail />} />
               <Route path="/event-rental" element={<EventRentalPage />} />
               <Route path="/about-us" element={<AboutUs />} />
-
+              <Route path="/promotions" element={<PromotionsList />} />
+              <Route path="/promotion/:id" element={<PromotionDetail />} />
+              <Route path="/entertainment" element={<EntertainmentList />} />
+        <Route path="/entertainment/:id" element={<EntertainmentDetail />} />
             </Routes>
           </div>
 
