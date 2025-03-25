@@ -6,7 +6,7 @@ const MovieDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate(); // Phải gọi bên trong function component
 
-  const movie = movies.find((m) => m.id === id); // Tìm phim theo id
+  const movie = movies.find((m) => m.id === parseInt(id)); // Tìm phim theo id
 
   if (!movie) {
     return <div className="text-center text-red-500">Phim không tồn tại</div>;

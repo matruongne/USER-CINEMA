@@ -1,59 +1,34 @@
-import React, { useRef } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import movies from "../../data/movies"; // Import data từ file
 
-const movies = [
-    { title: 'Godzilla x Kong: The New Empire', image: '/images/godzilla-kong.jpg', genre: 'Action, Sci-Fi' },
-    { title: 'Dune: Part Two', image: '/images/dune2.jpg', genre: 'Adventure, Drama' },
-    { title: 'Deadpool & Wolverine', image: '/images/deadpool-wolverine.jpg', genre: 'Action, Comedy' },
-    { title: 'Kung Fu Panda 4', image: '/images/kungfu-panda4.jpg', genre: 'Animation, Comedy' },
-    { title: 'The Batman 2', image: '/images/batman2.jpg', genre: 'Action, Crime' },
-];
+const MoviesList = () => {
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h2 className="text-2xl font-bold text-white mb-6">Phim Đang Chiếu</h2>
 
-const MovieList = () => {
-    const scrollRef = useRef(null);
+      {/* Hiển thị danh sách phim từ file data */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {movies.map((movie) => (
+          <div key={movie.id} className="bg-gray-800 rounded-lg shadow-md overflow-hidden">
+            <img src={movie.image} alt={movie.title} className="w-full h-64 object-cover" />
 
-    const scroll = (direction) => {
-        if (scrollRef.current) {
-            const scrollAmount = scrollRef.current.clientWidth * 0.85; // Cuộn theo 85% chiều rộng của container
-            scrollRef.current.scrollTo({
-                left: direction === "left" ? scrollRef.current.scrollLeft - scrollAmount : scrollRef.current.scrollLeft + scrollAmount,
-                behavior: "smooth",
-            });
-        }
-    };
+            <div className="p-4 text-white">
+              <h3 className="text-lg font-semibold">{movie.title}</h3>
+              <p className="text-sm text-gray-400">{movie.genre}</p>
+              <p className="text-sm text-gray-400">{movie.duration} • {movie.releaseDate}</p>
 
-    return (
-        <div className="relative w-full max-w-[1000px] mx-auto">
-            {/* Nút sang trái */}
-            <button 
-                onClick={() => scroll("left")}
-                className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-900/50 text-white p-3 rounded-full hover:bg-gray-700 transition-all"
-            >
-                <ChevronLeft size={32} />
-            </button>
-
-            {/* Danh sách phim có thể cuộn */}
-            <div ref={scrollRef} className="overflow-hidden w-full">
-                <div className="flex space-x-6 p-4 transition-all ease-in-out duration-500" style={{ scrollBehavior: 'smooth' }}>
-                    {movies.map((movie, index) => (
-                        <div key={index} className="bg-gray-800 p-4 rounded-lg shadow-lg w-[32%] shrink-0">
-                            <img src={movie.image} alt={movie.title} className="w-full h-64 object-cover rounded-md" />
-                            <h3 className="text-lg font-bold mt-2 text-white">{movie.title}</h3>
-                            <p className="text-gray-400">{movie.genre}</p>
-                        </div>
-                    ))}
-                </div>
+              <Link to={`/movie/${movie.id}`}>
+                <button className="mt-3 w-full bg-yellow-500 text-black py-2 rounded-md hover:bg-yellow-400 transition-all">
+                  Xem Chi Tiết
+                </button>
+              </Link>
             </div>
-
-            {/* Nút sang phải */}
-            <button 
-                onClick={() => scroll("right")}
-                className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-900/50 text-white p-3 rounded-full hover:bg-gray-700 transition-all"
-            >
-                <ChevronRight size={32} />
-            </button>
-        </div>
-    );
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
-export default MovieList;
+export default MoviesList;

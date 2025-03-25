@@ -6,6 +6,7 @@ import Banner from "./components/Banner/Banner";
 import Footer from "./components/Footer/footer";
 import QuickBooking from "./components/QuickBooking/quickbooking";
 import Showtimes from "./components/Showtime/Showtime";
+import MovieList from "./components/MovieList/MovieList";
 import MovieDetail from "./pages/MovieDetail";
 import Booking from "./pages/Booking";
 import ServiceDetail from "./pages/ServiceDetail";
@@ -29,6 +30,7 @@ const App = () => {
               <Route path="/" element={<><Banner /><QuickBooking /><Home /></>} />
               <Route path="/showtime" element={<Showtimes />} />
               <Route path="/movie/:id" element={<MovieDetail />} />
+              <Route path="/movies" element={<MovieList />} />
               <Route path="/booking/:id" element={<Booking />} />
               <Route path="/service/:service" element={<ServiceDetail />} />
               <Route path="/service-detail/:service" element={<ServiceDetail />} />
