@@ -63,7 +63,7 @@ const Header = () => {
 
           {/* Nút đặt bắp nước */}
           <button
-            onClick={() => navigate("/concession")}
+            onClick={() => navigate("/food")}
             className="bg-[#9C27B0] text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-[#6A1B9A]"
           >
             ĐẶT BẮP NƯỚC

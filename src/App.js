@@ -16,6 +16,9 @@ import PromotionsList from "./components/Promotion/PromotionsList";
 import PromotionDetail from "./components/Promotion/PromotionDetail";
 import EntertainmentList from "./components/Entertainment/EntertainmentList";
 import EntertainmentDetail from "./components/Entertainment/EntertainmentDetail";
+import Food from "./pages/Food";
+import Checkout from "./pages/Checkout";
+import CheckoutSuccess from "./pages/CheckoutSuccess";
 
 const App = () => {
     return (
@@ -39,7 +42,10 @@ const App = () => {
               <Route path="/promotions" element={<PromotionsList />} />
               <Route path="/promotion/:id" element={<PromotionDetail />} />
               <Route path="/entertainment" element={<EntertainmentList />} />
-        <Route path="/entertainment/:id" element={<EntertainmentDetail />} />
+              <Route path="/entertainment/:id" element={<EntertainmentDetail />} />
+              <Route path="/food" element={<Food />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/checkout-success" element={<CheckoutSuccess />} />
             </Routes>
           </div>
 

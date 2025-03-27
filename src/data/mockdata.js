@@ -6,6 +6,7 @@ import cinemas from "./cinemas";
 import promotions from "../promotionsData";
 import users from "./users";
 import about from "./about";
+import foodData from "./foodData";
 
 export {
   movies,
@@ -16,4 +17,5 @@ export {
   promotions,
   users,
   about,
+  foodData,
 };
