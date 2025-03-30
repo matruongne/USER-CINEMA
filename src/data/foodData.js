@@ -65,7 +65,7 @@ const foodData = [
     {
       id: 8,
       name: "Pepsi",
-      image: "/images/pepsi.jpg",
+      image: "/images/test.jpg",
       category: "Nước Ngọt",
       description: "Pepsi vị truyền thống, giải nhiệt.",
       price: 25000,
