@@ -20,7 +20,7 @@ const MoviesList = () => {
 
               <Link to={`/movie/${movie.id}`}>
                 <button className="mt-3 w-full bg-yellow-500 text-black py-2 rounded-md hover:bg-yellow-400 transition-all">
-                  Xem Chi Tiết
+                  Đặt vé ngay 
                 </button>
               </Link>
             </div>

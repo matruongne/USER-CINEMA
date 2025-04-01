@@ -87,7 +87,7 @@ const Header = () => {
                 <Link to="/settings" className="block px-4 py-2 hover:bg-gray-200 transition-all duration-200">
                   Cài đặt
                 </Link>
-                <Link to="/logout" className="block px-4 py-2 text-red-500 hover:bg-gray-200 transition-all duration-200">
+                <Link to="/auth" className="block px-4 py-2 text-red-500 hover:bg-gray-200 transition-all duration-200">
                   Đăng xuất
                 </Link>
               </div>

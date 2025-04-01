@@ -24,7 +24,8 @@ const movies = [
     releaseDate: "01/03/2024",
     director: "Denis Villeneuve",
     cast: ["Timothée Chalamet", "Zendaya", "Rebecca Ferguson"],
-    description: "Paul Atreides tiếp tục hành trình trở thành lãnh đạo của Fremen.",
+    description:
+      "Paul Atreides tiếp tục hành trình trở thành lãnh đạo của Fremen.",
     trailer: "https://www.youtube.com/embed/Way9Dexny3w",
   },
   {
@@ -66,7 +67,8 @@ const movies = [
     releaseDate: "14/02/2025",
     director: "Lê Thanh Sơn",
     cast: ["Ninh Dương Lan Ngọc", "Ngô Kiến Huy", "Hứa Vĩ Văn"],
-    description: "Hành trình tình yêu đầy hài hước của cặp đôi trong giới kinh doanh.",
+    description:
+      "Hành trình tình yêu đầy hài hước của cặp đôi trong giới kinh doanh.",
     trailer: "https://www.youtube.com/embed/EXAMPLE",
   },
   {
@@ -150,7 +152,8 @@ const movies = [
     releaseDate: "16/05/2025",
     director: "Banjong Pisanthanakun",
     cast: ["Mario Maurer", "Davika Hoorne"],
-    description: "Một người đàn ông vô tình trở thành vật chủ cho thế lực tà ác.",
+    description:
+      "Một người đàn ông vô tình trở thành vật chủ cho thế lực tà ác.",
     trailer: "https://www.youtube.com/embed/EXAMPLE",
   },
   {
@@ -166,7 +169,7 @@ const movies = [
     cast: ["Ben Whishaw", "Hugh Grant", "Sally Hawkins"],
     description: "Chú gấu Paddington tiếp tục phiêu lưu khám phá thế giới.",
     trailer: "https://www.youtube.com/embed/EXAMPLE",
-  }
+  },
 ];
 
 export default movies;
