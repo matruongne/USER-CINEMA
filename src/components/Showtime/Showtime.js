@@ -1,18 +1,14 @@
 import React, { useState } from "react";
-
-const cinemas = [
-  { id: 1, name: "Cinestar Quốc Thanh" },
-  { id: 2, name: "Cinestar Huế" },
-  { id: 3, name: "Cinestar Đà Lạt" },
-  { id: 4, name: "Cinestar Mỹ Tho" },
-];
+import { Link } from "react-router-dom"; // Import Link
+import cinemas from "../../data/cinemas";
 
 const movies = [
   {
     id: 1,
     title: "Godzilla x Kong: The New Empire",
     image: "/images/godzilla-kong.jpg",
-    description: "Cuộc đối đầu hoành tráng giữa Godzilla và King Kong khi một thế lực mới trỗi dậy.",
+    description:
+      "Cuộc đối đầu hoành tráng giữa Godzilla và King Kong khi một thế lực mới trỗi dậy.",
     showtimes: {
       "14/03/2025": ["10:00", "13:00", "16:00", "19:00"],
       "15/03/2025": ["09:00", "11:30", "14:00", "17:30", "20:30"],
@@ -22,7 +18,8 @@ const movies = [
     id: 2,
     title: "Dune: Part Two",
     image: "/images/dune2.jpg",
-    description: "Paul Atreides tiếp tục hành trình của mình trên hành tinh cát Arrakis.",
+    description:
+      "Paul Atreides tiếp tục hành trình của mình trên hành tinh cát Arrakis.",
     showtimes: {
       "14/03/2025": ["09:30", "12:30", "15:30", "18:30"],
       "15/03/2025": ["10:00", "13:15", "16:30", "19:45", "22:00"],
@@ -32,7 +29,8 @@ const movies = [
     id: 3,
     title: "Deadpool & Wolverine",
     image: "/images/deadpool-wolverine.jpg",
-    description: "Deadpool cùng Wolverine đối đầu với kẻ thù mới trong cuộc phiêu lưu đa vũ trụ.",
+    description:
+      "Deadpool cùng Wolverine đối đầu với kẻ thù mới trong cuộc phiêu lưu đa vũ trụ.",
     showtimes: {
       "14/03/2025": ["11:00", "14:00", "17:00", "20:00"],
       "15/03/2025": ["10:15", "13:30", "16:45", "20:00", "22:30"],
@@ -42,7 +40,8 @@ const movies = [
     id: 4,
     title: "Inside Out 2",
     image: "/images/inside-out2.jpg",
-    description: "Những cảm xúc bên trong Riley đối mặt với những thử thách mới khi cô bé lớn lên.",
+    description:
+      "Những cảm xúc bên trong Riley đối mặt với những thử thách mới khi cô bé lớn lên.",
     showtimes: {
       "14/03/2025": ["08:30", "11:30", "14:30", "17:30"],
       "15/03/2025": ["09:00", "12:15", "15:30", "18:45", "21:00"],
@@ -50,10 +49,10 @@ const movies = [
   },
 ];
 
-const dates = ["14/03/2025", "15/03/2025"]; // Danh sách ngày có suất chiếu
+const dates = ["14/03/2025", "15/03/2025"];
 
 const Showtimes = () => {
-  const [selectedCinema, setSelectedCinema] = useState(cinemas[0].id);
+  const [selectedCinema, setSelectedCinema] = useState(cinemas[0].id); // Sử dụng id thay vì slug
   const [selectedDate, setSelectedDate] = useState(dates[0]);
 
   return (
@@ -61,17 +60,18 @@ const Showtimes = () => {
       {/* Chọn rạp */}
       <div className="flex gap-4 mb-6">
         {cinemas.map((cinema) => (
-          <button
-            key={cinema.id}
-            className={`px-4 py-2 rounded-lg font-semibold transition ${
-              selectedCinema === cinema.id
-                ? "bg-yellow-400 text-black"
-                : "bg-gray-700 text-white hover:bg-yellow-500"
-            }`}
-            onClick={() => setSelectedCinema(cinema.id)}
-          >
-            {cinema.name}
-          </button>
+          <Link key={cinema.id} to={`/cinemas/${cinema.slug}`}> {/* Sử dụng slug thay vì id */}
+            <button
+              className={`px-4 py-2 rounded-lg font-semibold transition ${
+                selectedCinema === cinema.id // So sánh bằng id
+                  ? "bg-yellow-400 text-black"
+                  : "bg-gray-700 text-white hover:bg-yellow-500"
+              }`}
+              onClick={() => setSelectedCinema(cinema.id)} // Cập nhật id khi chọn rạp
+            >
+              {cinema.name}
+            </button>
+          </Link>
         ))}
       </div>
 
@@ -95,7 +95,10 @@ const Showtimes = () => {
       {/* Danh sách phim */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {movies.map((movie) => (
-          <div key={movie.id} className="bg-gray-800 p-4 rounded-lg shadow-lg flex">
+          <div
+            key={movie.id}
+            className="bg-gray-800 p-4 rounded-lg shadow-lg flex"
+          >
             <img
               src={movie.image}
               alt={movie.title}

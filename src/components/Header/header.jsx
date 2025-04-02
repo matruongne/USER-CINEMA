@@ -2,17 +2,7 @@ import React, { useState } from "react";
 import { Search, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-
-const cinemas = [
-  "Cinestar Quốc Thanh (TP.HCM)",
-  "Cinestar Hai Bà Trưng (TP.HCM)",
-  "Cinestar Huế (TP. Huế)",
-  "Cinestar Đà Lạt (TP. Đà Lạt)",
-  "Cinestar Mỹ Tho (Tiền Giang)",
-  "Cinestar Kiên Giang (Rạch Sỏi)",
-  "Cinestar Sinh Viên (Bình Dương)",
-  "Cinestar Lâm Đồng (Đức Trọng)",
-];
+import cinemas from "../../data/cinemas";
 
 const Header = () => {
   const [isCinemaOpen, setIsCinemaOpen] = useState(false);
@@ -29,6 +19,10 @@ const Header = () => {
     timeoutId = setTimeout(() => {
       setIsCinemaOpen(false);
     }, 300);
+  };
+
+  const handleCinemaClick = (slug) => {
+    navigate(`/cinemas/${slug}`);
   };
 
   return (
@@ -107,8 +101,12 @@ const Header = () => {
             <div className="absolute left-0 top-full bg-[#0C1C36] border border-gray-700 shadow-lg rounded-md p-4 w-[600px] mt-2 z-50">
               <div className="grid grid-cols-2 gap-4">
                 {cinemas.map((cinema, index) => (
-                  <span key={index} className="text-white hover:text-yellow-400 cursor-pointer transition">
-                    {cinema}
+                  <span
+                    key={index}
+                    className="text-white hover:text-yellow-400 cursor-pointer transition"
+                    onClick={() => handleCinemaClick(cinema.slug)}
+                  >
+                    {cinema.name}
                   </span>
                 ))}
               </div>
@@ -116,7 +114,7 @@ const Header = () => {
           )}
         </div>
 
-        <Link to="/showtime" className="hover:text-white transition-all">📅 Lịch chiếu</Link>
+        <Link to="/cinemas" className="hover:text-white transition-all">📅 Lịch chiếu</Link>
         <Link to="/promotions" className="hover:text-white transition-all">Khuyến mãi</Link>
         <Link to="/event-rental" className="hover:text-white transition-all">Thuê sự kiện</Link>
         <Link to="/entertainment" className="hover:text-white transition-all">Tất cả giải trí</Link>
