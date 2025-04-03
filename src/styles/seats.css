@@ -8,9 +8,12 @@
     cursor: pointer;
     transition: 0.3s;
 }
-
+.selected {
+    border: 2px solid red; /* Thêm viền đỏ */
+    background-color: #25bb0e; /* Có thể thêm màu nền nếu cần */
+  }
 .seat.available {
-    background-color: #4CAF50;
+    background-color: #78c57b;
     color: white;
 }
 
