@@ -18,7 +18,7 @@ const MoviesList = () => {
               <p className="text-sm text-gray-400">{movie.genre}</p>
               <p className="text-sm text-gray-400">{movie.duration} • {movie.releaseDate}</p>
 
-              <Link to={`/movie/${movie.id}`}>
+              <Link to={`/booking/${movie.id}`}>
                 <button className="mt-3 w-full bg-yellow-500 text-black py-2 rounded-md hover:bg-yellow-400 transition-all">
                   Đặt vé ngay 
                 </button>

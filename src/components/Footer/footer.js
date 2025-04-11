@@ -28,8 +28,8 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-bold mb-3">TÀI KHOẢN</h3>
             <ul className="space-y-2">
-              <li><Link to="/login" className="hover:text-yellow-300">Đăng nhập</Link></li>
-              <li><Link to="/register" className="hover:text-yellow-300">Đăng ký</Link></li>
+              <li><Link to="/auth" className="hover:text-yellow-300">Đăng nhập</Link></li>
+              <li><Link to="/auth" className="hover:text-yellow-300">Đăng ký</Link></li>
               <li><Link to="/membership" className="hover:text-yellow-300">Membership</Link></li>
             </ul>
           </div>
@@ -103,7 +103,7 @@ const Footer = () => {
             <Link to="#" className="hover:text-yellow-300">Hỏi và đáp</Link>
           </div>
           <div className="mt-4">
-            <img src="/bocongthuong.png" alt="Đã thông báo bộ công thương" className="h-10 mx-auto" />
+            <img src="/public/icons/bộ công thương.webp" alt="Đã thông báo bộ công thương" className="h-10 mx-auto" />
           </div>
         </div>
       </div>

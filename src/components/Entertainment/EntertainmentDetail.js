@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { entertainmentData } from "../../data/entertainmentData";
 import { Link } from "react-router-dom";
 
+
 const EntertainmentDetail = () => {
   const { id } = useParams();
   const item = entertainmentData.find((ent) => ent.id === parseInt(id));

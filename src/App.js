@@ -7,7 +7,6 @@ import Footer from "./components/Footer/footer";
 import QuickBooking from "./components/QuickBooking/quickbooking";
 import Showtimes from "./components/Showtime/Showtime";
 import MovieList from "./components/MovieList/MovieList";
-import MovieDetail from "./pages/MovieDetail";
 import Booking from "./pages/Booking";
 import ServiceDetail from "./pages/ServiceDetail";
 import EventRentalPage from "./pages/EventRentalPage";
@@ -19,7 +18,7 @@ import EntertainmentDetail from "./components/Entertainment/EntertainmentDetail"
 import Food from "./pages/Food";
 import Checkout from "./pages/Checkout";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
-import AuthPage from "./pages/AuthPage";
+import AuthPage from "./components/auth/AuthPage";
 
 const App = () => {
     return (
@@ -34,7 +33,6 @@ const App = () => {
               <Route path="/" element={<><Banner /><QuickBooking /><Home /></>} />
               <Route path="/cinemas" element={<Showtimes />} />
               <Route path="/cinemas/:slug" element={<Showtimes />} />
-              <Route path="/movie/:id" element={<MovieDetail />} />
               <Route path="/movies" element={<MovieList />} />
               <Route path="/booking" element={<Booking />} />
               <Route path="/booking/:id" element={<Booking />} />

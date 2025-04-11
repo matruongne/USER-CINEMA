@@ -1,145 +1,205 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import movies from "../data/movies";
-import "../styles/seats.css";
-
-const TICKET_PRICES = {
-  normal: 50000,
-  vip: 80000,
-  couple: 120000,
-};
-
-const POPCORN_PRICES = {
-  small: 30000,
-  medium: 50000,
-  large: 70000,
-};
+import foodData from "../data/foodData";
+import cinemas from "../data/cinemas";
+import movieData from "../data/movies";
+import "./food.css";
+import { toast } from "react-toastify";
 
 const Booking = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const movie = movies.find((m) => String(m.id) === String(id));
 
+  const [selectedCinema, setSelectedCinema] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Tất cả");
+  const [cart, setCart] = useState([]);
+  const [selectedMovie, setSelectedMovie] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const [ticketType, setTicketType] = useState("normal");
-  const [popcornSize, setPopcornSize] = useState("none");
-  const [isBookingSuccess, setIsBookingSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  if (!movie) {
-    return <div className="text-center text-red-500">Phim không tồn tại</div>;
-  }
+  useEffect(() => {
+    const movie = movieData.find((m) => m.id.toString() === id);
+    setSelectedMovie(movie);
+  }, [id]);
 
-  const handleSeatSelection = (seat) => {
+  const seatLayout = {
+    rows: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "M", "N"],
+    cols: 12,
+    coupleSeats: ["M01", "M02", "M03", "M04", "N01", "N02", "N03", "N04"],
+    booked: ["H09"],
+  };
+
+  const handleSeatClick = (seat) => {
+    if (seatLayout.booked.includes(seat)) return;
+    if (seatLayout.coupleSeats.includes(seat)) {
+      const seatIndex = parseInt(seat.slice(1));
+      const row = seat[0];
+      const pair = seatIndex % 2 === 0 ? seatIndex - 1 : seatIndex + 1;
+      const pairSeat = `${row}${pair.toString().padStart(2, "0")}`;
+      if (selectedSeats.includes(seat) && selectedSeats.includes(pairSeat)) {
+        setSelectedSeats((prev) =>
+          prev.filter((s) => s !== seat && s !== pairSeat)
+        );
+      } else {
+        setSelectedSeats((prev) => [...prev, seat, pairSeat]);
+      }
+      return;
+    }
     setSelectedSeats((prev) =>
       prev.includes(seat) ? prev.filter((s) => s !== seat) : [...prev, seat]
     );
   };
 
-  const handleBooking = () => {
-    if (selectedSeats.length === 0) {
-      alert("Vui lòng chọn ít nhất một ghế!");
-      return;
-    }
+  const filteredFoods = foodData.filter(
+    (item) => selectedCinema === "" || item.cinemas.includes(selectedCinema)
+  );
 
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setIsBookingSuccess(true);
-      setTimeout(() => {
-        navigate("/"); // Redirect to the homepage after booking success
-      }, 3000);
-    }, 2000);
+  const displayedFoods =
+    selectedCategory === "Tất cả"
+      ? filteredFoods
+      : filteredFoods.filter((item) => item.category === selectedCategory);
+
+  const addToCart = (item) => {
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
+
+      toast(`Đã thêm ${item.name} vào giỏ hàng`, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
+      if (existingItem) {
+        return prevCart.map((cartItem) =>
+          cartItem.id === item.id
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        );
+      } else {
+        return [...prevCart, { ...item, quantity: 1 }];
+      }
+    });
   };
 
-  const totalPrice =
-    selectedSeats.length * TICKET_PRICES[ticketType] +
-    (popcornSize !== "none" ? POPCORN_PRICES[popcornSize] : 0);
+  const decreaseQuantity = (id) => {
+    setCart((prevCart) =>
+      prevCart
+        .map((item) =>
+          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
+        )
+        .filter((item) => item.quantity > 0)
+    );
+  };
+
+  const removeFromCart = (id) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  };
+
+  const seatPrice = 75000;
+  const seatTotal = selectedSeats.length * seatPrice;
+  const foodTotal = cart.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+  const totalPrice = seatTotal + foodTotal;
+
+  const handleCheckout = () => {
+    if (!selectedMovie) return alert("Vui lòng chọn phim.");
+    if (!selectedTime) return alert("Vui lòng chọn giờ chiếu.");
+    if (selectedSeats.length === 0) return alert("Vui lòng chọn ghế.");
+
+    navigate("/checkout", {
+      state: {
+        cart,
+        totalPrice,
+        selectedSeats,
+        selectedMovie,
+        selectedTime,
+      },
+    });
+    setCart([]);
+  };
 
   return (
     <div className="container mx-auto p-6 text-white">
-      <h1 className="text-3xl font-bold text-center mb-6">
-        Đặt vé - {movie.title}
-      </h1>
-
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Movie Information */}
-        <div className="bg-gray-900 p-6 rounded-lg shadow-lg">
-          <img
-            src={movie.poster}
-            alt={movie.title}
-            className="w-full h-96 object-cover rounded-md mb-4"
-          />
-          <h2 className="text-2xl font-bold">{movie.title}</h2>
-          <p className="text-gray-400">
-            {movie.genre} • {movie.duration} phút
-          </p>
-          <p>
-            <strong>Đạo diễn:</strong> {movie.director}
-          </p>
-          <p>
-            <strong>Diễn viên:</strong> {movie.cast.join(", ")}
-          </p>
-          <p>
-            <strong>Quốc gia:</strong> {movie.country}
-          </p>
-          <p>
-            <strong>Khởi chiếu:</strong> {movie.releaseDate}
-          </p>
-          <p className="mt-2">{movie.description}</p>
-          <a
-            href={movie.trailer}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block mt-4 text-blue-400 hover:underline"
-          >
-            🎬 Xem trailer
-          </a>
-        </div>
-
-        {/* Seat Selection */}
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Chọn ghế ngồi</h2>
-
-          {/* Ticket Type Selection */}
-          <select
-            value={ticketType}
-            onChange={(e) => setTicketType(e.target.value)}
-            className="bg-gray-700 text-white p-2 rounded-md mb-4"
-          >
-            <option value="normal">Thường - 50,000đ</option>
-            <option value="vip">VIP - 80,000đ</option>
-            <option value="couple">Couple - 120,000đ</option>
-          </select>
-
-          <div className="screen bg-gray-500 w-full h-10 mb-4 text-center text-black font-bold rounded-md flex items-center justify-center">
-            📽️ Màn Hình
+      {selectedMovie && (
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold mb-2">{selectedMovie.title}</h1>
+          <div className="flex gap-6">
+            <img
+              src={selectedMovie.poster}
+              alt={selectedMovie.title}
+              className="w-48 rounded"
+            />
+            <div>
+              <p>
+                <strong>Thời lượng:</strong> {selectedMovie.duration}
+              </p>
+              <p>
+                <strong>Quốc gia:</strong> {selectedMovie.country}
+              </p>
+              <p>
+                <strong>Khởi chiếu:</strong> {selectedMovie.releaseDate}
+              </p>
+              <p>
+                <strong>Đạo diễn:</strong> {selectedMovie.director}
+              </p>
+              <p>
+                <strong>Diễn viên:</strong> {selectedMovie.cast.join(", ")}
+              </p>
+              <p className="mt-2">{selectedMovie.description}</p>
+            </div>
           </div>
+        </div>
+      )}
 
-          {/* Seat Map */}
-          <div className="seat-map grid gap-2">
-            {"ABCDEFGH".split("").map((row) => (
-              <div key={row} className="seat-row flex justify-center gap-2">
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => {
-                  const seat = `${row}${num}`;
+      <h2 className="text-xl font-bold mb-2">Chọn giờ chiếu</h2>
+      <div className="flex gap-4 mb-6">
+        {["10:00", "14:00", "18:00", "21:00"].map((time) => (
+          <button
+            key={time}
+            className={`px-4 py-2 rounded-lg ${
+              selectedTime === time ? "bg-red-600" : "bg-gray-700"
+            }`}
+            onClick={() => setSelectedTime(time)}
+          >
+            {time}
+          </button>
+        ))}
+      </div>
+
+      {selectedTime && (
+        <>
+          <h2 className="text-xl font-bold mb-2">Chọn ghế</h2>
+          <div className="grid gap-2 mb-6">
+            {seatLayout.rows.map((row) => (
+              <div key={row} className="flex gap-2">
+                {Array.from({ length: seatLayout.cols }, (_, i) => {
+                  const seat = `${row}${(i + 1).toString().padStart(2, "0")}`;
+                  const isCouple = seatLayout.coupleSeats.includes(seat);
+                  const isBooked = seatLayout.booked.includes(seat);
+                  const isSelected = selectedSeats.includes(seat);
+
                   return (
                     <button
                       key={seat}
-                      className={`seat-icon ${
-                        selectedSeats.includes(seat) ? "selected" : "available"
+                      disabled={isBooked}
+                      onClick={() => handleSeatClick(seat)}
+                      className={`w-8 h-8 text-sm rounded ${
+                        isBooked
+                          ? "bg-gray-600"
+                          : isSelected
+                          ? "bg-green-500"
+                          : isCouple
+                          ? "bg-pink-400"
+                          : "bg-gray-300"
                       }`}
-                      onClick={() => handleSeatSelection(seat)}
                     >
-                      <img
-                        src={`/icons/${
-                          selectedSeats.includes(seat)
-                            ? "seat-selected"
-                            : "seat-available"
-                        }.png`}
-                        alt={seat}
-                        className="w-8 h-8"
-                      />
-                      <span className="text-sm">{seat}</span>
+                      {seat.slice(1)}
                     </button>
                   );
                 })}
@@ -147,64 +207,126 @@ const Booking = () => {
             ))}
           </div>
 
-          {/* Popcorn and Drink Selection */}
-          <h2 className="text-xl font-semibold mt-4">Chọn bắp nước</h2>
-          <select
-            value={popcornSize}
-            onChange={(e) => setPopcornSize(e.target.value)}
-            className="bg-gray-700 text-white p-2 rounded-md mb-4"
-          >
-            <option value="none">Không chọn</option>
-            <option value="small">Nhỏ - 30,000đ</option>
-            <option value="medium">Vừa - 50,000đ</option>
-            <option value="large">Lớn - 70,000đ</option>
-          </select>
+          <h2 className="text-xl font-bold mb-2">Chọn đồ ăn</h2>
+          {/* <div className="flex justify-center mb-4">
+            <select
+              value={selectedCinema}
+              onChange={(e) => setSelectedCinema(e.target.value)}
+              className="p-2 text-black rounded-lg"
+            >
+              <option value="">-- Chọn Rạp --</option>
+              {cinemas.map((cinema) => (
+                <option key={cinema.id} value={cinema.name}>
+                  {cinema.name}
+                </option>
+              ))}
+            </select>
+          </div> */}
 
-         {/* Total Price */}
-<div className="text-lg font-bold mt-4">
-  <h3 className="text-xl">Tổng tiền:</h3>
-  <div className="text-yellow-400">
-    {selectedSeats.length > 0 && (
-      <div>
-        <strong>Ghế đã chọn:</strong> {selectedSeats.join(", ")} -{" "}
-        {selectedSeats.length * TICKET_PRICES[ticketType].toLocaleString()}.000 đ
-      </div>
-    )}
-    {popcornSize !== "none" && (
-      <div>
-        <strong>Bắp:</strong> {popcornSize} - {POPCORN_PRICES[popcornSize].toLocaleString()}đ
-      </div>
-    )}
-  
-    <div className="mt-2">
-      <strong>Tổng cộng:</strong>{" "}
-      <span className="text-yellow-400">
-        {totalPrice.toLocaleString()}đ
-      </span>
-    </div>
-  </div>
-</div>
+          <div className="flex justify-center gap-4 mb-6">
+            {[
+              "Tất cả",
+              "Combo",
+              "Bắp Rang",
+              "Nước Ngọt",
+              "Nước Ép",
+              "Snack",
+            ].map((category) => (
+              <button
+                key={category}
+                className={`px-4 py-2 rounded-lg ${
+                  selectedCategory === category ? "bg-red-600" : "bg-gray-700"
+                }`}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
 
-          {/* Booking Button */}
-          <button
-            onClick={handleBooking}
-            className={`bg-red-600 px-4 py-2 rounded-md w-full mt-4 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={loading}
-          >
-            {loading ? "Đang xử lý..." : "Xác nhận đặt vé"}
-          </button>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {displayedFoods.map((item) => (
+              <div key={item.id} className="bg-gray-800 p-4 rounded-lg">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full h-40 object-cover rounded-md mb-3"
+                />
+                <h2 className="text-lg font-bold">{item.name}</h2>
+                <p className="text-sm">{item.description}</p>
+                <p className="text-yellow-400 font-bold mt-2">
+                  {item.price.toLocaleString()} VNĐ
+                </p>
+                <button
+                  className="mt-3 bg-red-600 px-4 py-2 rounded-lg w-full hover:bg-red-700 transition"
+                  onClick={() => addToCart(item)}
+                >
+                  Thêm vào giỏ hàng
+                </button>
+              </div>
+            ))}
+          </div>
 
-          {/* Booking Success Message */}
-          {isBookingSuccess && (
-            <div className="bg-green-500 text-white text-center p-4 rounded-md mt-4">
-              ✅ Đặt vé thành công! Bạn sẽ được chuyển về trang chủ sau 3
-              giây...
-            </div>
-          )}
-        </div>
-      </div>
+          <div className="mt-10 p-6 bg-gray-700 rounded-lg">
+            <h2 className="text-2xl font-bold mb-4">Tóm tắt đặt vé</h2>
+
+            {cart.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold mb-2">Giỏ đồ ăn:</h3>
+                {cart.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex bg-purple-400 p-4 rounded-md justify-between items-center mb-2"
+                  >
+                    <span>
+                      {item.name} x{item.quantity}
+                    </span>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => decreaseQuantity(item.id)}
+                        className="bg-yellow-500 px-4 py-2 rounded"
+                      >
+                        -
+                      </button>
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="bg-red-500 px-4 py-2 rounded"
+                      >
+                        x
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <p>
+              <strong>Phim:</strong> {selectedMovie.title}
+            </p>
+            <p>
+              <strong>Giờ chiếu:</strong> {selectedTime}
+            </p>
+            <p>
+              <strong>Ghế đã chọn:</strong> {selectedSeats.join(", ")}
+            </p>
+            <p>
+              <strong>Tiền vé:</strong> {seatTotal.toLocaleString()} VNĐ
+            </p>
+            <p>
+              <strong>Tiền đồ ăn:</strong> {foodTotal.toLocaleString()} VNĐ
+            </p>
+            <p className="text-yellow-400 text-xl mt-2">
+              Tổng: {totalPrice.toLocaleString()} VNĐ
+            </p>
+            <button
+              className="mt-4 bg-green-600 px-4 py-2 rounded hover:bg-green-700"
+              onClick={handleCheckout}
+            >
+              Thanh toán
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
