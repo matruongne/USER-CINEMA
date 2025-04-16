@@ -31,7 +31,11 @@ const Header = () => {
         {/* Logo */}
         <div className="flex items-center">
           <Link to="/">
-            <img src="/logo.png" alt="Cinestar Logo" className="h-12 mr-2 cursor-pointer" />
+            <img
+              src="/logo.png"
+              alt="Cinestar Logo"
+              className="h-12 mr-2 cursor-pointer"
+            />
           </Link>
         </div>
 
@@ -63,38 +67,28 @@ const Header = () => {
             ĐẶT BẮP NƯỚC
           </button>
 
-          {/* User Menu */}
-          <div className="relative group">
-            <button
-              className="flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-300"
-              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-            >
-              <User size={24} />
-            </button>
-
-            {/* Dropdown Menu */}
-            {isUserMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg overflow-hidden z-50">
-                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-200 transition-all duration-200">
-                  Hồ sơ
-                </Link>
-                <Link to="/settings" className="block px-4 py-2 hover:bg-gray-200 transition-all duration-200">
-                  Cài đặt
-                </Link>
-                <Link to="/auth" className="block px-4 py-2 text-red-500 hover:bg-gray-200 transition-all duration-200">
-                  Đăng xuất
-                </Link>
-              </div>
-            )}
-          </div>
+          {/* Nút profile */}
+          <button
+            onClick={() => navigate("/profile")}
+            className="bg-gray-700 text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-gray-600 flex items-center gap-2"
+          >
+            <User size={18} />
+            <span>Hồ sơ</span>
+          </button>
         </div>
       </div>
 
       {/* Navigation */}
       <nav className="container mx-auto mt-4 flex justify-center gap-6 text-gray-400">
         {/* Chọn Rạp - Dropdown */}
-        <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <button className="flex items-center gap-2 hover:text-yellow-300">📍 Chọn rạp</button>
+        <div
+          className="relative"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <button className="flex items-center gap-2 hover:text-yellow-300">
+            📍 Chọn rạp
+          </button>
 
           {/* Dropdown danh sách rạp */}
           {isCinemaOpen && (
@@ -114,11 +108,21 @@ const Header = () => {
           )}
         </div>
 
-        <Link to="/cinemas" className="hover:text-white transition-all">📅 Lịch chiếu</Link>
-        <Link to="/promotions" className="hover:text-white transition-all">Khuyến mãi</Link>
-        <Link to="/event-rental" className="hover:text-white transition-all">Thuê sự kiện</Link>
-        <Link to="/entertainment" className="hover:text-white transition-all">Tất cả giải trí</Link>
-        <Link to="/about-us" className="hover:text-white transition-all">Giới thiệu</Link>
+        <Link to="/cinemas" className="hover:text-white transition-all">
+          📅 Lịch chiếu
+        </Link>
+        <Link to="/promotions" className="hover:text-white transition-all">
+          Khuyến mãi
+        </Link>
+        <Link to="/event-rental" className="hover:text-white transition-all">
+          Thuê sự kiện
+        </Link>
+        <Link to="/entertainment" className="hover:text-white transition-all">
+          Tất cả giải trí
+        </Link>
+        <Link to="/about-us" className="hover:text-white transition-all">
+          Giới thiệu
+        </Link>
       </nav>
     </header>
   );

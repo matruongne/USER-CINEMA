@@ -10,6 +10,9 @@ const Booking = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedShowtime, setSelectedShowtime] = useState("");
+
   const [selectedCinema, setSelectedCinema] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Tất cả");
   const [cart, setCart] = useState([]);
