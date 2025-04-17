@@ -20,6 +20,7 @@ import Checkout from "./pages/Checkout";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
 import AuthPage from "./components/auth/AuthPage";
 import ProfilePage from "./pages/ProfilePage";
+import PurchaseHistoryPage from "./pages/PurchaseHistoryPage";
 
 const App = () => {
   return (
@@ -29,7 +30,7 @@ const App = () => {
         <Header />
 
         {/* Nội dung chính */}
-        <div className="flex-grow">
+        <div className="flex-grow relative z-10">
           <Routes>
             <Route
               path="/"
@@ -65,6 +66,7 @@ const App = () => {
             <Route path="/checkout-success" element={<CheckoutSuccess />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/history" element={<PurchaseHistoryPage />} />
           </Routes>
         </div>
 

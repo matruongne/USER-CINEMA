@@ -1,16 +1,22 @@
-import React, { useState, useRef } from "react";
-import {
-  FaUser,
-  FaStar,
-  FaClock,
-  FaSignOutAlt,
-  FaBars,
-} from "react-icons/fa";
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { FaUser, FaStar, FaClock, FaSignOutAlt, FaBars } from "react-icons/fa";
 import MembershipPage from "./MembershipPage";
+import Breadcrumb from "../components/Breadcrumb";
 
 const ProfilePage = () => {
-  const [isCollapsed, setIsCollapsed] = useState(true);
-  const [selectedTab, setSelectedTab] = useState("info");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const saved = localStorage.getItem("sidebarCollapsed");
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  // Lấy tham số tab từ URL
+  const queryParams = new URLSearchParams(location.search);
+  const tabParam = queryParams.get("tab");
+
+  const [selectedTab, setSelectedTab] = useState(tabParam || "info");
   const [formData, setFormData] = useState({
     fullName: "Phan Hồ Như Trọng",
     dob: "2003-06-11",
@@ -23,6 +29,17 @@ const ProfilePage = () => {
 
   const [avatarPreview, setAvatarPreview] = useState(null);
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    localStorage.setItem("sidebarCollapsed", JSON.stringify(isCollapsed));
+  }, [isCollapsed]);
+
+  // Cập nhật selectedTab khi tham số URL thay đổi
+  useEffect(() => {
+    if (tabParam) {
+      setSelectedTab(tabParam);
+    }
+  }, [tabParam]);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,13 +65,32 @@ const ProfilePage = () => {
 
   const handleAvatarClick = () => fileInputRef.current.click();
 
+  // Hàm xử lý chuyển tab
+  const handleTabChange = (tab) => {
+    setSelectedTab(tab);
+    if (tab === "info") {
+      navigate("/profile");
+    } else if (tab === "member") {
+      navigate("/profile?tab=member");
+    }
+  };
+
+  const breadcrumbItems = [
+    { label: "Tài khoản", path: "/profile" },
+    {
+      label:
+        selectedTab === "info" ? "Thông tin khách hàng" : "Thành viên Cinestar",
+      path: selectedTab === "info" ? "/profile" : "/profile?tab=member",
+    },
+  ];
+
   return (
     <div className="flex min-h-screen bg-[#0e1133] text-white">
       {/* Sidebar */}
       <aside
-        className={`$${
+        className={`${
           isCollapsed ? "w-24" : "w-64"
-        } m-4 rounded-xl bg-gradient-to-b from-[#4d4fac] to-[#3459ad] p-4 flex flex-col justify-between shadow-xl transition-all duration-300`}
+        } m-4 rounded-xl bg-gradient-to-b from-[#4d4fac] to-[#3459ad] p-4 flex flex-col justify-between shadow-xl transition-all duration-300 h-[calc(100vh-6rem)]`}
       >
         <div>
           <button
@@ -103,7 +139,7 @@ const ProfilePage = () => {
           </div>
 
           <div
-            className={`$${
+            className={`${
               isCollapsed ? "text-xs" : "text-base"
             } bg-[#ffe100] text-black font-bold text-center py-1 rounded mb-4`}
           >
@@ -119,46 +155,57 @@ const ProfilePage = () => {
 
           <nav className="space-y-4 mt-4">
             <button
-              className={`flex items-center space-x-2 hover:text-yellow-300 ${
+              className={`flex items-center w-full ${
+                isCollapsed ? "justify-center" : "space-x-2"
+              } hover:text-yellow-300 ${
                 selectedTab === "info" ? "text-yellow-400 font-semibold" : ""
               }`}
               title="Thông tin khách hàng"
-              onClick={() => setSelectedTab("info")}
+              onClick={() => handleTabChange("info")}
             >
-              <FaUser />
+              <FaUser className={isCollapsed ? "mx-auto" : ""} />
               {!isCollapsed && <span>Thông tin khách hàng</span>}
             </button>
             <button
-              className={`flex items-center space-x-2 hover:text-yellow-300 ${
+              className={`flex items-center w-full ${
+                isCollapsed ? "justify-center" : "space-x-2"
+              } hover:text-yellow-300 ${
                 selectedTab === "member" ? "text-yellow-400 font-semibold" : ""
               }`}
               title="Thành viên Cinestar"
-              onClick={() => setSelectedTab("member")}
+              onClick={() => handleTabChange("member")}
             >
-              <FaStar />
+              <FaStar className={isCollapsed ? "mx-auto" : ""} />
               {!isCollapsed && <span>Thành viên Cinestar</span>}
             </button>
             <button
-              className="flex items-center space-x-2 hover:text-yellow-300"
+              className={`flex items-center w-full ${
+                isCollapsed ? "justify-center" : "space-x-2"
+              } hover:text-yellow-300`}
               title="Lịch sử mua hàng"
+              onClick={() => navigate("/profile/history")}
             >
-              <FaClock />
+              <FaClock className={isCollapsed ? "mx-auto" : ""} />
               {!isCollapsed && <span>Lịch sử mua hàng</span>}
             </button>
           </nav>
         </div>
 
         <button
-          className="flex items-center space-x-2 mt-6 hover:text-yellow-300"
+          className={`flex items-center w-full ${
+            isCollapsed ? "justify-center" : "space-x-2"
+          } mt-6 hover:text-yellow-300`}
           title="Đăng xuất"
         >
-          <FaSignOutAlt />
+          <FaSignOutAlt className={isCollapsed ? "mx-auto" : ""} />
           {!isCollapsed && <span>Đăng xuất</span>}
         </button>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 p-8">
+        <Breadcrumb items={breadcrumbItems} />
+
         {selectedTab === "info" ? (
           <>
             <h1 className="text-2xl font-bold mb-6">THÔNG TIN KHÁCH HÀNG</h1>
@@ -166,7 +213,9 @@ const ProfilePage = () => {
               <h2 className="text-lg font-bold mb-4">Thông tin cá nhân</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold mb-1">Họ và tên</label>
+                  <label className="block text-sm font-semibold mb-1">
+                    Họ và tên
+                  </label>
                   <input
                     type="text"
                     name="fullName"
@@ -176,7 +225,9 @@ const ProfilePage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1">Ngày sinh</label>
+                  <label className="block text-sm font-semibold mb-1">
+                    Ngày sinh
+                  </label>
                   <input
                     type="date"
                     name="dob"
@@ -186,7 +237,9 @@ const ProfilePage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1">Số điện thoại</label>
+                  <label className="block text-sm font-semibold mb-1">
+                    Số điện thoại
+                  </label>
                   <input
                     type="text"
                     name="phone"
@@ -196,7 +249,9 @@ const ProfilePage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1">Email</label>
+                  <label className="block text-sm font-semibold mb-1">
+                    Email
+                  </label>
                   <input
                     type="email"
                     name="email"
@@ -218,7 +273,9 @@ const ProfilePage = () => {
               <h2 className="text-lg font-bold mb-4">Đổi mật khẩu</h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold mb-1">Mật khẩu cũ *</label>
+                  <label className="block text-sm font-semibold mb-1">
+                    Mật khẩu cũ *
+                  </label>
                   <input
                     type="password"
                     name="oldPassword"
@@ -228,7 +285,9 @@ const ProfilePage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-1">Mật khẩu mới *</label>
+                  <label className="block text-sm font-semibold mb-1">
+                    Mật khẩu mới *
+                  </label>
                   <input
                     type="password"
                     name="newPassword"
