@@ -1,127 +1,127 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom"; // Import Link
+import movies from "../../data/movies";
 import cinemas from "../../data/cinemas";
 
-const movies = [
-  {
-    id: 1,
-    title: "Godzilla x Kong: The New Empire",
-    image: "/images/godzilla-kong.jpg",
-    description:
-      "Cuộc đối đầu hoành tráng giữa Godzilla và King Kong khi một thế lực mới trỗi dậy.",
-    showtimes: {
-      "14/03/2025": ["10:00", "13:00", "16:00", "19:00"],
-      "15/03/2025": ["09:00", "11:30", "14:00", "17:30", "20:30"],
-    },
-  },
-  {
-    id: 2,
-    title: "Dune: Part Two",
-    image: "/images/dune2.jpg",
-    description:
-      "Paul Atreides tiếp tục hành trình của mình trên hành tinh cát Arrakis.",
-    showtimes: {
-      "14/03/2025": ["09:30", "12:30", "15:30", "18:30"],
-      "15/03/2025": ["10:00", "13:15", "16:30", "19:45", "22:00"],
-    },
-  },
-  {
-    id: 3,
-    title: "Deadpool & Wolverine",
-    image: "/images/deadpool-wolverine.jpg",
-    description:
-      "Deadpool cùng Wolverine đối đầu với kẻ thù mới trong cuộc phiêu lưu đa vũ trụ.",
-    showtimes: {
-      "14/03/2025": ["11:00", "14:00", "17:00", "20:00"],
-      "15/03/2025": ["10:15", "13:30", "16:45", "20:00", "22:30"],
-    },
-  },
-  {
-    id: 4,
-    title: "Inside Out 2",
-    image: "/images/inside-out2.jpg",
-    description:
-      "Những cảm xúc bên trong Riley đối mặt với những thử thách mới khi cô bé lớn lên.",
-    showtimes: {
-      "14/03/2025": ["08:30", "11:30", "14:30", "17:30"],
-      "15/03/2025": ["09:00", "12:15", "15:30", "18:45", "21:00"],
-    },
-  },
-];
-
-const dates = ["14/03/2025", "15/03/2025"];
-
 const Showtimes = () => {
-  const [selectedCinema, setSelectedCinema] = useState(cinemas[0].id); // Sử dụng id thay vì slug
-  const [selectedDate, setSelectedDate] = useState(dates[0]);
+  const [selectedCinema, setSelectedCinema] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  // Lấy danh sách ngày chiếu từ dữ liệu phim
+  const dates = Object.keys(movies[0].showtimes);
 
   return (
-    <div className="container mx-auto py-6 px-4">
-      {/* Chọn rạp */}
-      <div className="flex gap-4 mb-6">
-        {cinemas.map((cinema) => (
-          <Link key={cinema.id} to={`/cinemas/${cinema.slug}`}> {/* Sử dụng slug thay vì id */}
-            <button
-              className={`px-4 py-2 rounded-lg font-semibold transition ${
-                selectedCinema === cinema.id // So sánh bằng id
-                  ? "bg-yellow-400 text-black"
-                  : "bg-gray-700 text-white hover:bg-yellow-500"
+    <div className="container mx-auto px-4 py-8">
+      {/* Phần chọn rạp */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold mb-4">Chọn Rạp</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {cinemas.map((cinema) => (
+            <Link
+              key={cinema.id}
+              to={`/showtime/${cinema.slug}`}
+              className={`p-4 rounded-lg border ${
+                selectedCinema?.id === cinema.id
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-gray-200 hover:border-blue-300"
               }`}
-              onClick={() => setSelectedCinema(cinema.id)} // Cập nhật id khi chọn rạp
+              onClick={() => setSelectedCinema(cinema)}
             >
-              {cinema.name}
+              <img
+                src={cinema.image}
+                alt={cinema.name}
+                className="w-full h-40 object-cover rounded-lg mb-2"
+              />
+              <h3 className="font-semibold">{cinema.name}</h3>
+              <p className="text-sm text-gray-600">{cinema.address}</p>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Phần chọn ngày */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold mb-4">Chọn Ngày</h2>
+        <div className="flex overflow-x-auto gap-4 pb-4">
+          {dates.map((date) => (
+            <button
+              key={date}
+              className={`px-6 py-3 rounded-lg whitespace-nowrap ${
+                selectedDate === date
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-100 hover:bg-gray-200"
+              }`}
+              onClick={() => setSelectedDate(date)}
+            >
+              {date}
             </button>
-          </Link>
-        ))}
+          ))}
+        </div>
       </div>
 
-      {/* Chọn ngày */}
-      <div className="flex gap-4 mb-6">
-        {dates.map((date) => (
-          <button
-            key={date}
-            className={`px-4 py-2 rounded-lg font-semibold transition ${
-              selectedDate === date
-                ? "bg-blue-500 text-white"
-                : "bg-gray-700 text-white hover:bg-blue-400"
-            }`}
-            onClick={() => setSelectedDate(date)}
-          >
-            {date}
-          </button>
-        ))}
-      </div>
-
-      {/* Danh sách phim */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Phần hiển thị phim và suất chiếu */}
+      <div className="space-y-8">
         {movies.map((movie) => (
           <div
             key={movie.id}
-            className="bg-gray-800 p-4 rounded-lg shadow-lg flex"
+            className="bg-white rounded-lg shadow-lg overflow-hidden"
           >
-            <img
-              src={movie.image}
-              alt={movie.title}
-              className="w-32 h-48 object-cover rounded-md"
-            />
-            <div className="ml-4">
-              <h3 className="text-xl font-bold">{movie.title}</h3>
-              <p className="text-gray-400 text-sm mt-1">{movie.description}</p>
-
-              {/* Hiển thị suất chiếu theo ngày đã chọn */}
-              <div className="mt-2 flex gap-2 flex-wrap">
-                {movie.showtimes[selectedDate]?.length > 0 ? (
-                  movie.showtimes[selectedDate].map((time, index) => (
-                    <button
-                      key={index}
-                      className="bg-yellow-500 text-black font-semibold px-3 py-1 rounded-md hover:bg-yellow-400"
-                    >
-                      {time}
-                    </button>
-                  ))
-                ) : (
-                  <p className="text-red-500">Không có suất chiếu</p>
-                )}
+            <div className="flex flex-col md:flex-row">
+              <div className="md:w-1/4">
+                <img
+                  src={movie.image}
+                  alt={movie.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-6 md:w-3/4">
+                <div className="flex flex-col md:flex-row md:items-start md:justify-between">
+                  <div className="mb-4 md:mb-0">
+                    <h3 className="text-xl font-bold mb-2">{movie.title}</h3>
+                    <div className="space-y-1 text-sm text-gray-600">
+                      <p>
+                        <span className="font-semibold">Thể loại:</span>{" "}
+                        {movie.genre}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Thời lượng:</span>{" "}
+                        {movie.duration}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Đạo diễn:</span>{" "}
+                        {movie.director}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Diễn viên:</span>{" "}
+                        {movie.actors}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Khởi chiếu:</span>{" "}
+                        {movie.releaseDate}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Đánh giá:</span>{" "}
+                        {movie.rating}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="md:ml-8">
+                    <p className="text-sm text-gray-600 mb-4">
+                      {movie.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedDate &&
+                        movie.showtimes[selectedDate]?.map((time, index) => (
+                          <button
+                            key={index}
+                            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                          >
+                            {time}
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

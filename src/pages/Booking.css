@@ -1,0 +1,42 @@
+/* Booking.css */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Hiệu ứng hover cho card phim */
+.group:hover .group-hover\:scale-105 {
+  transform: scale(1.05);
+}
+
+/* Hiệu ứng transition cho các nút */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* Responsive grid */
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1025px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

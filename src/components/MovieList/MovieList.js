@@ -6,14 +6,7 @@ const MoviesList = () => {
   const navigate = useNavigate();
 
   const handleBooking = (movie) => {
-    navigate(`/booking/${movie.id}`, {
-      state: {
-        movie,
-        selectedSeats: [],
-        selectedTime: "",
-        totalPrice: 0,
-      },
-    });
+    navigate(`/booking/${movie.id}`);
   };
 
   return (

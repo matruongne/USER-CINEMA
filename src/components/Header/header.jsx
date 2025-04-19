@@ -22,11 +22,11 @@ const Header = () => {
   };
 
   const handleCinemaClick = (slug) => {
-    navigate(`/cinemas/${slug}`);
+    navigate(`/showtime/${slug}`);
   };
 
   return (
-    <header className="bg-[#0C1C36] text-white p-4 shadow-md relative z-50">
+    <header className="bg-bgColor text-white p-4 shadow-md relative z-50">
       <div className="container mx-auto flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
@@ -44,36 +44,37 @@ const Header = () => {
           <input
             type="text"
             placeholder="Tìm phim, rạp"
-            className="w-full px-4 py-2 rounded-full bg-gray-800 text-white outline-none"
+            className="w-full px-4 py-2 rounded-full bg-primary outline-none text-black"
           />
-          <Search className="absolute right-3 top-3 text-gray-400" size={18} />
+          <button className="p-2 bg-secondary absolute w-[40px] h-[40px] rounded-r-full right-0 top-0 hover:bg-secondary/80">
+            <Search className=" text-white" size={18} />
+          </button>
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-4">
-          {/* Nút đặt vé */}
-          <button
-            onClick={() => navigate("/booking")}
-            className="bg-[#FFD700] text-black font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-[#FFC107]"
-          >
-            ĐẶT VÉ NGAY
-          </button>
-
           {/* Nút đặt bắp nước */}
           <button
             onClick={() => navigate("/food")}
-            className="bg-[#9C27B0] text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-[#6A1B9A]"
+            className="bg-primary text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary/60"
           >
             ĐẶT BẮP NƯỚC
+          </button>
+
+          {/* Nút đặt vé */}
+          <button
+            onClick={() => navigate("/booking")}
+            className="bg-secondary text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-secondary/60"
+          >
+            ĐẶT VÉ NGAY
           </button>
 
           {/* Nút profile */}
           <button
             onClick={() => navigate("/profile")}
-            className="bg-gray-700 text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-gray-600 flex items-center gap-2"
+            className="text-white font-bold ml-14 px-2 py-2 rounded-lg transition-all duration-300 hover:bg-third/60 flex items-center gap-2"
           >
-            <User size={18} />
-            <span>Hồ sơ</span>
+            <User size={25} />
           </button>
         </div>
       </div>
@@ -86,13 +87,13 @@ const Header = () => {
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <button className="flex items-center gap-2 hover:text-yellow-300">
+          <button className="flex items-center gap-2 hover:text-primary text-white">
             📍 Chọn rạp
           </button>
 
           {/* Dropdown danh sách rạp */}
           {isCinemaOpen && (
-            <div className="absolute left-0 top-full bg-[#0C1C36] border border-gray-700 shadow-lg rounded-md p-4 w-[600px] mt-2 z-50">
+            <div className="absolute left-0 top-full bg-bgColor border border-gray-700 shadow-lg rounded-md p-4 w-[600px] mt-2 z-50">
               <div className="grid grid-cols-2 gap-4">
                 {cinemas.map((cinema, index) => (
                   <span
@@ -108,19 +109,34 @@ const Header = () => {
           )}
         </div>
 
-        <Link to="/cinemas" className="hover:text-white transition-all">
+        <Link
+          to="/showtime"
+          className="hover:text-primary text-white transition-all"
+        >
           📅 Lịch chiếu
         </Link>
-        <Link to="/promotions" className="hover:text-white transition-all">
+        <Link
+          to="/promotions"
+          className="hover:text-primary text-white transition-all"
+        >
           Khuyến mãi
         </Link>
-        <Link to="/event-rental" className="hover:text-white transition-all">
+        <Link
+          to="/event-rental"
+          className="hover:text-primary text-white transition-all"
+        >
           Thuê sự kiện
         </Link>
-        <Link to="/entertainment" className="hover:text-white transition-all">
+        <Link
+          to="/entertainment"
+          className="hover:text-primary text-white transition-all"
+        >
           Tất cả giải trí
         </Link>
-        <Link to="/about-us" className="hover:text-white transition-all">
+        <Link
+          to="/about-us"
+          className="hover:text-primary text-white transition-all"
+        >
           Giới thiệu
         </Link>
       </nav>

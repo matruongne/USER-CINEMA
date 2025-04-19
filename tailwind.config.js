@@ -6,9 +6,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#f42c37",
-        secondary: "#ff676f",
-        brandYellow: "#fdc62e",
+        primary: "#FFBB94",
+        secondary: "#DC586D",
+        third: "#fb9590",
+        bgColor: "#852E4E",
         brandGreen: "#2dcc6f",
         brandBlue: "#1376f4",
         brandWhite: "#eeeeee",

@@ -8,6 +8,7 @@ import QuickBooking from "./components/QuickBooking/quickbooking";
 import Showtimes from "./components/Showtime/Showtime";
 import MovieList from "./components/MovieList/MovieList";
 import Booking from "./pages/Booking";
+import BookingDetail from "./pages/BookingDetail";
 import ServiceDetail from "./pages/ServiceDetail";
 import EventRentalPage from "./pages/EventRentalPage";
 import AboutUs from "./pages/AboutUs";
@@ -21,17 +22,19 @@ import CheckoutSuccess from "./pages/CheckoutSuccess";
 import AuthPage from "./components/auth/AuthPage";
 import ProfilePage from "./pages/ProfilePage";
 import PurchaseHistoryPage from "./pages/PurchaseHistoryPage";
+import CinemaDetail from "./components/CinemaDetail/CinemaDetail";
 
 const App = () => {
   return (
     <Router>
-      <div className="bg-[#0C1C36] min-h-screen text-white flex flex-col">
+      <div className="bg-bgColor min-h-screen text-white flex flex-col">
         {/* Header */}
         <Header />
 
         {/* Nội dung chính */}
         <div className="flex-grow relative z-10">
           <Routes>
+            11
             <Route
               path="/"
               element={
@@ -42,11 +45,11 @@ const App = () => {
                 </>
               }
             />
-            <Route path="/cinemas" element={<Showtimes />} />
-            <Route path="/cinemas/:slug" element={<Showtimes />} />
+            <Route path="/showtime" element={<Showtimes />} />
+            <Route path="/showtime/:slug" element={<CinemaDetail />} />
             <Route path="/movies" element={<MovieList />} />
             <Route path="/booking" element={<Booking />} />
-            <Route path="/booking/:id" element={<Booking />} />
+            <Route path="/booking/:id" element={<BookingDetail />} />
             <Route path="/service/:service" element={<ServiceDetail />} />
             <Route
               path="/service-detail/:service"
