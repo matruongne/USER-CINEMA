@@ -20,15 +20,33 @@ const Booking = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 text-white">
-      <h1 className="text-3xl font-bold mb-6">Đặt Vé Xem Phim</h1>
+    <div className="booking-container">
+      {/* Booking Steps */}
+      <div className="booking-steps">
+        <div className="step">
+          <div className="step-number">1</div>
+          <div className="step-text">Chọn rạp</div>
+        </div>
+        <div className="step">
+          <div className="step-number">2</div>
+          <div className="step-text">Chọn phim</div>
+        </div>
+        <div className="step">
+          <div className="step-number">3</div>
+          <div className="step-text">Chọn ngày</div>
+        </div>
+        <div className="step">
+          <div className="step-number">4</div>
+          <div className="step-text">Chọn suất</div>
+        </div>
+      </div>
 
       {/* Tabs */}
       <div className="flex border-b border-gray-700 mb-6">
         <button
-          className={`px-6 py-3 text-lg font-semibold ${
+          className={`flex-1 px-6 py-4 text-2xl font-bold ${
             activeTab === "nowShowing"
-              ? "border-b-2 border-[#FFD700] text-[#FFD700]"
+              ? "border-b-4 border-[#FFD700] text-[#FFD700]"
               : "text-gray-400 hover:text-white"
           }`}
           onClick={() => setActiveTab("nowShowing")}
@@ -36,9 +54,9 @@ const Booking = () => {
           Phim Đang Chiếu
         </button>
         <button
-          className={`px-6 py-3 text-lg font-semibold ${
+          className={`flex-1 px-6 py-4 text-2xl font-bold ${
             activeTab === "comingSoon"
-              ? "border-b-2 border-[#FFD700] text-[#FFD700]"
+              ? "border-b-4 border-[#FFD700] text-[#FFD700]"
               : "text-gray-400 hover:text-white"
           }`}
           onClick={() => setActiveTab("comingSoon")}
@@ -47,51 +65,27 @@ const Booking = () => {
         </button>
       </div>
 
-      {/* Danh sách phim */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {/* Movie Grid */}
+      <div className="movie-grid">
         {(activeTab === "nowShowing" ? nowShowingMovies : comingSoonMovies).map(
           (movie) => (
             <div
               key={movie.id}
-              className="bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group"
+              className="movie-card"
               onClick={() => handleMovieClick(movie)}
             >
-              <div className="relative aspect-[2/3]">
-                <img
-                  src={movie.poster}
-                  alt={movie.title}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                {movie.status === "comingSoon" && (
-                  <div className="absolute top-2 right-2 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    Sắp Chiếu
-                  </div>
-                )}
-              </div>
-              <div className="p-4">
-                <h3 className="text-xl font-bold mb-2 text-[#FFD700]">
-                  {movie.title}
-                </h3>
-                <div className="text-sm text-gray-400 space-y-1">
-                  <p>
-                    <span className="font-semibold">Thời lượng:</span>{" "}
-                    {movie.duration}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Thể loại:</span>{" "}
-                    {movie.genre}
-                  </p>
-                  {movie.status === "nowShowing" && (
-                    <p>
-                      <span className="font-semibold">Giá vé:</span> 75.000đ
-                    </p>
-                  )}
+              <img
+                src={movie.poster}
+                alt={movie.title}
+                className="movie-poster"
+              />
+              <div className="movie-info">
+                <h3 className="movie-title">{movie.title}</h3>
+                <div className="movie-details">
+                  <p>Thời lượng: {movie.duration}</p>
+                  <p>Thể loại: {movie.genre}</p>
+                  {movie.status === "nowShowing" }
                 </div>
-                {movie.status === "nowShowing" && (
-                  <button className="mt-4 w-full bg-[#FFD700] text-black font-bold py-2 rounded-lg hover:bg-[#FFC107] transition-colors">
-                    Đặt Vé Ngay
-                  </button>
-                )}
               </div>
             </div>
           )
