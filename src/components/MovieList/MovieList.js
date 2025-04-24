@@ -1,20 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import movies from "../../data/movies";
 
 const MoviesList = () => {
   const navigate = useNavigate();
+  const [visibleMovies, setVisibleMovies] = useState(8);
 
   const handleBooking = (movie) => {
     navigate(`/booking/${movie.id}`);
   };
+
+  const handleLoadMore = () => {
+    setVisibleMovies((prevCount) => prevCount + 8);
+  };
+
+  const displayedMovies = movies.slice(0, visibleMovies);
+  const hasMoreMovies = visibleMovies < movies.length;
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-2xl font-bold text-white mb-6">Phim Đang Chiếu</h2>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {movies.map((movie) => (
+        {displayedMovies.map((movie) => (
           <div
             key={movie.id}
             className="relative bg-gray-800 rounded-xl shadow-md overflow-hidden group cursor-pointer"
@@ -46,6 +54,29 @@ const MoviesList = () => {
           </div>
         ))}
       </div>
+
+      {hasMoreMovies && (
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={handleLoadMore}
+            className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-6 rounded-full flex items-center"
+          >
+            <span className="mr-2">Xem thêm</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

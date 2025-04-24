@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import MovieList from "../components/MovieList/MovieList";
-import Schedule from "../components/Schedule/Schedule";
 import EntertainmentList from "../components/Entertainment/EntertainmentList";
 import Contact from "../components/contact/contact";
+import PromotionsList from "../components/Promotion/PromotionsList";
 
 import AOS from "aos";
 import "aos/dist/aos.css";
@@ -15,16 +15,35 @@ const Home = () => {
   return (
     <div className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold mb-4">Phim Đang Chiếu</h2>
-        <MovieList category="now-showing" />
-        <h2 className="text-2xl font-bold mt-8 mb-4">Phim Sắp Chiếu</h2>
-        <MovieList category="coming-soon" />
-        <h2 className="text-2xl font-bold mt-8 mb-4">Lịch Chiếu</h2>
-        <Schedule />
-        <h2 className="text-2xl font-bold mt-8 mb-4">Giải Trí</h2>
-        <EntertainmentList />
-        <h2 className="text-2xl font-bold mt-8 mb-4">Liên Hệ</h2>
-        <Contact />
+        {/* Phim đang chiếu */}
+        <section className="mb-12" data-aos="fade-up">
+          <h2 className="text-3xl font-bold mb-6">Phim Đang Chiếu</h2>
+          <MovieList category="now-showing" />
+        </section>
+
+        {/* Phim sắp chiếu */}
+        <section className="mb-12" data-aos="fade-up">
+          <h2 className="text-3xl font-bold mb-6">Phim Sắp Chiếu</h2>
+          <MovieList category="coming-soon" />
+        </section>
+
+        {/* Khuyến mãi */}
+        <section className="mb-12" data-aos="fade-up">
+          <h2 className="text-3xl font-bold mb-6">Khuyến Mãi</h2>
+          <PromotionsList />
+        </section>
+
+        {/* Giải trí */}
+        <section className="mb-12" data-aos="fade-up">
+          <h2 className="text-3xl font-bold mb-6">Giải Trí</h2>
+          <EntertainmentList />
+        </section>
+
+        {/* Liên hệ */}
+        <section data-aos="fade-up">
+          <h2 className="text-3xl font-bold mb-6">Liên Hệ</h2>
+          <Contact />
+        </section>
       </div>
     </div>
   );

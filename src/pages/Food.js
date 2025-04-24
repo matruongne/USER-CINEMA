@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import foodData from "../data/foodData";
 import cinemas from "../data/cinemas";
 import "./food.css";
@@ -8,7 +8,35 @@ const Food = () => {
   const [selectedCinema, setSelectedCinema] = useState(""); // Rạp được chọn
   const [selectedCategory, setSelectedCategory] = useState("Tất cả"); // Danh mục
   const [cart, setCart] = useState([]); // Giỏ hàng
+  const [showDetails, setShowDetails] = useState(false); // Hiển thị chi tiết
   const navigate = useNavigate();
+  const stickyBarRef = useRef(null);
+  const footerRef = useRef(null);
+
+  // Scroll to top khi component mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (footerRef.current && stickyBarRef.current) {
+        const footerRect = footerRef.current.getBoundingClientRect();
+        const stickyBar = stickyBarRef.current;
+
+        if (footerRect.top > window.innerHeight) {
+          stickyBar.style.position = "fixed";
+          stickyBar.style.bottom = "0";
+        } else {
+          stickyBar.style.position = "absolute";
+          stickyBar.style.bottom = `${footerRef.current.offsetHeight}px`;
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Lọc sản phẩm theo rạp đã chọn
   const filteredFoods = foodData.filter(
@@ -35,7 +63,7 @@ const Food = () => {
         return [...prevCart, { ...item, quantity: 1 }];
       }
     });
-  
+
     // Thêm hiệu ứng nhảy ra
     // const productElement = document.getElementById(`food-${item.id}`);
     // if (productElement) {
@@ -43,7 +71,6 @@ const Food = () => {
     //   setTimeout(() => productElement.classList.remove("added-to-cart"), 300);
     // }
   };
-  
 
   // Giảm số lượng hoặc xóa khỏi giỏ hàng nếu số lượng = 0
   const decreaseQuantity = (id) => {
@@ -70,7 +97,7 @@ const Food = () => {
   // Xóa giỏ hàng sau khi thanh toán
   const handleCheckout = () => {
     navigate("/checkout", { state: { cart, totalPrice } });
-    setCart([]); 
+    setCart([]);
   };
 
   return (
@@ -113,19 +140,26 @@ const Food = () => {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {displayedFoods.length > 0 ? (
           displayedFoods.map((item) => (
-            <div key={item.id} className="food-item bg-gray-800 p-4 rounded-lg">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-full h-40 object-cover rounded-md mb-3"
-              />
-              <h2 className="text-lg font-bold">{item.name}</h2>
-              <p className="text-sm">{item.description}</p>
-              <p className="text-yellow-400 font-bold mt-2">
-                {item.price.toLocaleString()} VNĐ
-              </p>
+            <div
+              key={item.id}
+              className="food-item bg-gray-800 p-4 rounded-lg flex flex-col h-full"
+            >
+              <div className="flex-grow">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full h-40 object-cover rounded-md mb-3"
+                />
+                <h2 className="text-lg font-bold">{item.name}</h2>
+                <p className="text-sm text-gray-400">{item.description}</p>
+                <div className="mt-auto">
+                  <p className="text-primary font-bold text-lg">
+                    {item.price.toLocaleString()} VNĐ
+                  </p>
+                </div>
+              </div>
               <button
-                className="mt-3 bg-red-600 px-4 py-2 rounded-lg w-full hover:bg-red-700 transition"
+                className="mt-3 bg-primary text-white font-bold px-4 py-2 rounded-lg w-full transition-all duration-300 hover:bg-primary/60"
                 onClick={() => addToCart(item)}
               >
                 Thêm vào giỏ hàng
@@ -141,50 +175,109 @@ const Food = () => {
 
       {/* Hiển thị giỏ hàng */}
       {cart.length > 0 && (
-        <div className="mt-10 p-6 bg-gray-900 rounded-lg">
-          <h2 className="text-2xl font-bold mb-4">Giỏ Hàng</h2>
-          {cart.map((item) => (
-            <div
-              key={item.id}
-              className="flex justify-between items-center border-b border-gray-700 py-2"
-            >
-              <div>
-                <p className="font-bold">{item.name}</p>
-                <p className="text-yellow-400">
-                  {item.price.toLocaleString()} VNĐ x {item.quantity}
-                </p>
+        <div
+          ref={stickyBarRef}
+          className="sticky-bar bg-gradient-to-t from-[#1a1f37] to-transparent pt-8"
+        >
+          <div className="container mx-auto px-6">
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex gap-4 text-sm text-gray-400">
+                  <p>Rạp: {selectedCinema}</p>
+                  {cart.length > 0 && (
+                    <p>
+                      Combo:{" "}
+                      {cart
+                        .map((item) => `${item.name} x${item.quantity}`)
+                        .join(", ")}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-8">
+                  <div>
+                    <p className="text-gray-400 text-sm">Tổng tiền</p>
+                    <p className="text-yellow-400 text-xl font-bold">
+                      {cart
+                        .reduce(
+                          (total, item) => total + item.price * item.quantity,
+                          0
+                        )
+                        .toLocaleString()}{" "}
+                      VNĐ
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleCheckout}
+                    className="bg-yellow-500 px-8 py-3 rounded-lg text-lg font-bold text-gray-900 hover:bg-yellow-600 transition"
+                  >
+                    Thanh toán
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button
-                  className="bg-gray-700 px-2 py-1 rounded"
-                  onClick={() => decreaseQuantity(item.id)}
+
+              {showDetails && (
+                <div className="mt-4 pt-4 border-t border-gray-700 animate-fade-in">
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <h2 className="text-2xl font-bold text-white mb-4">
+                        Chi tiết đơn hàng
+                      </h2>
+                    </div>
+                    <div>
+                      <div className="space-y-2">
+                        {cart.map((item) => (
+                          <p key={item.id} className="text-white">
+                            {item.name} x{item.quantity} -{" "}
+                            {(item.price * item.quantity).toLocaleString()} VNĐ
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div
+                className="flex items-center justify-center mt-2 cursor-pointer"
+                onClick={() => setShowDetails(!showDetails)}
+              >
+                <span className="text-blue-400 underline text-sm">
+                  {showDetails ? "Ẩn chi tiết" : "Xem chi tiết"}
+                </span>
+                <svg
+                  className={`w-4 h-4 text-blue-400 transform transition-transform ml-1 ${
+                    showDetails ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  -
-                </button>
-                <span>{item.quantity}</span>
-                <button
-                  className="bg-gray-700 px-2 py-1 rounded"
-                  onClick={() => addToCart(item)}
-                >
-                  +
-                </button>
-                <button
-                  className="text-red-500"
-                  onClick={() => removeFromCart(item.id)}
-                >
-                  Xóa
-                </button>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
               </div>
             </div>
-          ))}
-          <div className="mt-4 text-lg font-bold text-yellow-400">
-            Tổng: {totalPrice.toLocaleString()} VNĐ
           </div>
-          <button className="checkout-button" onClick={handleCheckout}>
-        Thanh Toán
-      </button>
         </div>
       )}
+
+      <div ref={footerRef} className="mt-32">
+        {/* Your footer content */}
+      </div>
+
+      <style jsx>{`
+        .sticky-bar {
+          position: fixed;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 50;
+        }
+      `}</style>
     </div>
   );
 };
