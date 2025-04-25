@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import movieData from "../data/movies";
 import cinemas from "../data/cinemas";
 import "./food.css";
@@ -9,16 +9,25 @@ import SeatLayout from "../components/SeatLayout";
 const BookingDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedLayout, setSelectedLayout] = useState("3-zones");
 
-  const [selectedCinema, setSelectedCinema] = useState("");
+  const [selectedCinema, setSelectedCinema] = useState(
+    location.state?.selectedCinema || ""
+  );
   const [cart, setCart] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(
+    location.state?.selectedDate ? new Date(location.state.selectedDate) : null
+  );
+  const [selectedTime, setSelectedTime] = useState(
+    location.state?.selectedTime || null
+  );
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const [showSeatSelection, setShowSeatSelection] = useState(false);
+  const [showSeatSelection, setShowSeatSelection] = useState(
+    !!location.state?.selectedTime
+  );
   const [showDetails, setShowDetails] = useState(false);
   const stickyBarRef = useRef(null);
   const footerRef = useRef(null);
@@ -159,14 +168,29 @@ const BookingDetail = () => {
     if (!selectedTime) return alert("Vui lòng chọn giờ chiếu.");
     if (selectedSeats.length === 0) return alert("Vui lòng chọn ghế.");
 
+    // Chỉ truyền các thông tin cần thiết của phim
+    const movieInfo = {
+      id: selectedMovie.id,
+      title: selectedMovie.title,
+      image: selectedMovie.image,
+    };
+
+    // Chuyển đổi selectedDate thành string
+    const formattedDate = selectedDate.toLocaleDateString("vi-VN", {
+      weekday: "long",
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+    });
+
     navigate("/checkout", {
       state: {
         cart,
         totalPrice,
         selectedSeats,
-        selectedMovie,
+        selectedMovie: movieInfo,
         selectedTime,
-        selectedDate,
+        selectedDate: formattedDate,
         selectedCinema,
       },
     });

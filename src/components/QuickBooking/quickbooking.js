@@ -1,104 +1,100 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import movies from "../../data/movies";
+import cinemas from "../../data/cinemas";
 
 const QuickBooking = () => {
-  const [cinemas, setCinemas] = useState([]);
-  const [movies, setMovies] = useState([]);
-  const [dates, setDates] = useState([]);
-  const [schedules, setSchedules] = useState([]);
-
+  const navigate = useNavigate();
   const [selectedCinema, setSelectedCinema] = useState("");
   const [selectedMovie, setSelectedMovie] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
+  const [availableMovies, setAvailableMovies] = useState([]);
+  const [availableDates, setAvailableDates] = useState([]);
+  const [availableTimes, setAvailableTimes] = useState([]);
 
-  // Giả lập API lấy dữ liệu rạp
+  // Lấy danh sách phim khi chọn rạp
   useEffect(() => {
-    const fetchCinemas = async () => {
-      // Thay thế bằng API thực tế nếu có
-      const data = [
-        "Cinestar Quốc Thanh (TP.HCM)",
-        "Cinestar Hai Bà Trưng (TP.HCM)",
-        "Cinestar Sinh Viên (Bình Dương)",
-        "Cinestar Mỹ Tho (Tiền Giang)",
-      ];
-      setCinemas(data);
-    };
-    fetchCinemas();
-  }, []);
-
-  // Lấy phim theo rạp đã chọn
-  useEffect(() => {
-    if (!selectedCinema) return;
-    const fetchMovies = async () => {
-      // Giả lập API lấy phim của rạp
-      const data = [
-        { id: 1, title: "Avengers: Endgame" },
-        { id: 2, title: "John Wick 4" },
-      ];
-      setMovies(data);
-    };
-    fetchMovies();
+    if (selectedCinema) {
+      // Lọc phim đang chiếu
+      const nowShowingMovies = movies.filter(
+        (movie) => movie.status === "nowShowing"
+      );
+      setAvailableMovies(nowShowingMovies);
+      // Reset các lựa chọn phụ thuộc
+      setSelectedMovie("");
+      setSelectedDate("");
+      setSelectedTime("");
+    }
   }, [selectedCinema]);
 
-  // Lấy lịch chiếu theo phim đã chọn
+  // Lấy danh sách ngày chiếu khi chọn phim
   useEffect(() => {
-    if (!selectedMovie) return;
-    const fetchDates = async () => {
-      // Giả lập danh sách ngày chiếu
-      const data = ["01/04/2025", "02/04/2025", "03/04/2025"];
-      setDates(data);
-    };
-    fetchDates();
+    if (selectedMovie) {
+      const movie = movies.find((m) => m.title === selectedMovie);
+      if (movie) {
+        const dates = Object.keys(movie.showtimes);
+        setAvailableDates(dates);
+        setSelectedDate("");
+        setSelectedTime("");
+      }
+    }
   }, [selectedMovie]);
 
-  // Lấy suất chiếu theo ngày đã chọn
+  // Lấy danh sách suất chiếu khi chọn ngày
   useEffect(() => {
-    if (!selectedDate) return;
-    const fetchSchedules = async () => {
-      // Giả lập danh sách suất chiếu
-      const data = ["10:00", "14:00", "18:00", "20:30"];
-      setSchedules(data);
-    };
-    fetchSchedules();
-  }, [selectedDate]);
+    if (selectedMovie && selectedDate) {
+      const movie = movies.find((m) => m.title === selectedMovie);
+      if (movie && movie.showtimes[selectedDate]) {
+        setAvailableTimes(movie.showtimes[selectedDate]);
+        setSelectedTime("");
+      }
+    }
+  }, [selectedMovie, selectedDate]);
 
   const handleBooking = () => {
-    if (!selectedCinema || !selectedMovie || !selectedDate || !selectedTime) {
-      alert("Vui lòng chọn đầy đủ thông tin trước khi đặt vé!");
-      return;
+    // Tìm movie object từ title
+    const movie = movies.find((m) => m.title === selectedMovie);
+
+    if (movie) {
+      navigate(`/booking/${movie.id}`, {
+        state: {
+          selectedCinema,
+          selectedDate,
+          selectedTime,
+        },
+      });
     }
-    alert(
-      `Bạn đã đặt vé tại ${selectedCinema} vào ${selectedDate} - ${selectedTime}`
-    );
   };
 
   return (
-    <div className="bg-bgColor py-4 px-6 rounded-lg w-[90%] mx-auto mt-6 shadow-md">
+    <div className="bg-secondary py-4 px-6 rounded-lg w-[90%] mx-auto mt-6 shadow-md">
       <h2 className="text-white text-2xl font-bold mb-4">ĐẶT VÉ NHANH</h2>
       <div className="grid grid-cols-5 gap-2 items-center">
         {/* Chọn Rạp */}
         <select
           className="p-3 rounded-md text-lg border-2 border-[#6A1B9A] bg-white text-black"
+          value={selectedCinema}
           onChange={(e) => setSelectedCinema(e.target.value)}
         >
           <option value="">1. Chọn Rạp</option>
-          {cinemas.map((cinema, index) => (
-            <option key={index} value={cinema} className="text-black">
-              {cinema}
+          {cinemas.map((cinema) => (
+            <option key={cinema.id} value={cinema.name}>
+              {cinema.name}
             </option>
           ))}
         </select>
 
         {/* Chọn Phim */}
         <select
-          className="p-3 rounded-md text-lg border-2 border-[#6A1B9A]  bg-white text-black"
+          className="p-3 rounded-md text-lg border-2 border-[#6A1B9A] bg-white text-black"
+          value={selectedMovie}
           onChange={(e) => setSelectedMovie(e.target.value)}
           disabled={!selectedCinema}
         >
           <option value="">2. Chọn Phim</option>
-          {movies.map((movie) => (
-            <option key={movie.id} value={movie.title} className="text-black">
+          {availableMovies.map((movie) => (
+            <option key={movie.id} value={movie.title}>
               {movie.title}
             </option>
           ))}
@@ -107,12 +103,13 @@ const QuickBooking = () => {
         {/* Chọn Ngày */}
         <select
           className="p-3 rounded-md text-lg border-2 border-[#6A1B9A] bg-white text-black"
+          value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
           disabled={!selectedMovie}
         >
           <option value="">3. Chọn Ngày</option>
-          {dates.map((date, index) => (
-            <option key={index} value={date} className="text-black">
+          {availableDates.map((date) => (
+            <option key={date} value={date}>
               {date}
             </option>
           ))}
@@ -121,14 +118,13 @@ const QuickBooking = () => {
         {/* Chọn Suất */}
         <select
           className="p-3 rounded-md text-lg border-2 border-[#6A1B9A] bg-white text-black"
+          value={selectedTime}
           onChange={(e) => setSelectedTime(e.target.value)}
           disabled={!selectedDate}
         >
-          <option value="" className="text-gray-700">
-            4. Chọn Suất
-          </option>
-          {schedules.map((time, index) => (
-            <option key={index} value={time} className="text-black">
+          <option value="">4. Chọn Suất</option>
+          {availableTimes.map((time) => (
+            <option key={time} value={time}>
               {time}
             </option>
           ))}
@@ -136,8 +132,11 @@ const QuickBooking = () => {
 
         {/* Nút Đặt Vé */}
         <button
-          className="bg-primary text-white font-bold py-3 rounded-md text-lg w-full transition-all duration-300 hover:bg-primary/60"
+          className="bg-primary text-white font-bold py-3 rounded-md text-lg w-full transition-all duration-300 hover:bg-primary/60 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleBooking}
+          disabled={
+            !selectedCinema || !selectedMovie || !selectedDate || !selectedTime
+          }
         >
           ĐẶT NGAY
         </button>

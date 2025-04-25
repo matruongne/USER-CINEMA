@@ -1,19 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const Checkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { cart, totalPrice, selectedSeats, selectedMovie, selectedTime } =
-    location.state || {
-      cart: [],
-      totalPrice: 0,
-      selectedSeats: [],
-      selectedMovie: null,
-      selectedTime: "",
-    };
+  const { user } = useAuth();
+  const {
+    cart = [],
+    totalPrice = 0,
+    selectedSeats = [],
+    selectedMovie = null,
+    selectedTime = "",
+    selectedDate = "",
+    selectedCinema = "",
+  } = location.state || {};
 
   const [paymentMethod, setPaymentMethod] = useState("");
+
+  // Kiểm tra dữ liệu và redirect nếu không hợp lệ
+  useEffect(() => {
+    if (!location.state || !selectedMovie || selectedSeats.length === 0) {
+      alert("Vui lòng chọn phim và ghế ngồi trước khi thanh toán!");
+      navigate("/");
+      return;
+    }
+  }, [location.state, selectedMovie, selectedSeats, navigate]);
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -26,7 +38,29 @@ const Checkout = () => {
       return;
     }
 
-    // Giả lập xử lý thanh toán
+    // Kiểm tra đăng nhập trước khi thanh toán
+    if (!user) {
+      // Lưu thông tin đặt vé vào localStorage để sau khi đăng nhập có thể quay lại
+      localStorage.setItem(
+        "pendingCheckout",
+        JSON.stringify({
+          cart,
+          totalPrice,
+          paymentMethod,
+          selectedSeats,
+          selectedMovie,
+          selectedTime,
+          selectedCinema,
+          selectedDate,
+        })
+      );
+
+      alert("Vui lòng đăng nhập để tiếp tục thanh toán!");
+      navigate("/auth", { state: { returnUrl: "/checkout" } });
+      return;
+    }
+
+    // Nếu đã đăng nhập, tiến hành thanh toán
     setTimeout(() => {
       navigate("/checkout-success", {
         state: {
@@ -36,6 +70,8 @@ const Checkout = () => {
           selectedSeats,
           selectedMovie,
           selectedTime,
+          selectedCinema,
+          selectedDate,
         },
       });
     }, 1000);
@@ -59,16 +95,15 @@ const Checkout = () => {
                     <strong>Phim:</strong> {selectedMovie.title}
                   </p>
                   <p>
-                    <strong>Suất chiếu:</strong> {selectedTime}
+                    <strong>Rạp:</strong> {selectedCinema}
                   </p>
                 </div>
                 <div>
                   <p>
-                    <strong>Ghế đã chọn:</strong> {selectedSeats.join(", ")}
+                    <strong>Ngày chiếu:</strong> {selectedDate}
                   </p>
                   <p>
-                    <strong>Tiền vé:</strong>{" "}
-                    {(selectedSeats.length * 75000).toLocaleString()} VNĐ
+                    <strong>Suất chiếu:</strong> {selectedTime}
                   </p>
                 </div>
               </div>
@@ -82,7 +117,7 @@ const Checkout = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {cart.map((item) => (
                   <div
-                    key={item.id}
+                    key={item.id || item.name}
                     className="flex items-center bg-gray-700 p-3 rounded-lg"
                   >
                     <img
