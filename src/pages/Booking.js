@@ -1,98 +1,130 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import movieData from "../data/movies";
-import "./Booking.css";
+import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { getAllMoviesAsync, selectMovieStatus } from '../redux/Slices/Movie/movieSlice'
 
 const Booking = () => {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("nowShowing");
+	const navigate = useNavigate()
+	const dispatch = useDispatch()
+	const status = useSelector(selectMovieStatus)
 
-  // Phân loại phim đang chiếu và sắp chiếu
-  const nowShowingMovies = movieData.filter(
-    (movie) => movie.status === "nowShowing"
-  );
-  const comingSoonMovies = movieData.filter(
-    (movie) => movie.status === "comingSoon"
-  );
+	const [activeTab, setActiveTab] = useState('nowShowing')
+	const [nowShowing, setNowShowing] = useState([])
+	const [comingSoon, setComingSoon] = useState([])
 
-  const handleMovieClick = (movie) => {
-    navigate(`/booking/${movie.id}`);
-  };
+	const [page, setPage] = useState(1)
+	const [done, setDone] = useState(false)
 
-  return (
-    <div className="booking-container">
-      {/* Booking Steps */}
-      <div className="booking-steps">
-        <div className="step">
-          <div className="step-number">1</div>
-          <div className="step-text">Chọn rạp</div>
-        </div>
-        <div className="step">
-          <div className="step-number">2</div>
-          <div className="step-text">Chọn phim</div>
-        </div>
-        <div className="step">
-          <div className="step-number">3</div>
-          <div className="step-text">Chọn ngày</div>
-        </div>
-        <div className="step">
-          <div className="step-number">4</div>
-          <div className="step-text">Chọn suất</div>
-        </div>
-      </div>
+	const today = new Date()
 
-      {/* Tabs */}
-      <div className="flex border-b border-gray-700 mb-6">
-        <button
-          className={`flex-1 px-6 py-4 text-2xl font-bold ${
-            activeTab === "nowShowing"
-              ? "border-b-4 border-[#FFD700] text-[#FFD700]"
-              : "text-gray-400 hover:text-white"
-          }`}
-          onClick={() => setActiveTab("nowShowing")}
-        >
-          Phim Đang Chiếu
-        </button>
-        <button
-          className={`flex-1 px-6 py-4 text-2xl font-bold ${
-            activeTab === "comingSoon"
-              ? "border-b-4 border-[#FFD700] text-[#FFD700]"
-              : "text-gray-400 hover:text-white"
-          }`}
-          onClick={() => setActiveTab("comingSoon")}
-        >
-          Phim Sắp Chiếu
-        </button>
-      </div>
+	useEffect(() => {
+		const fetchMovies = async () => {
+			const { payload } = await dispatch(getAllMoviesAsync({ page, limit: 8 }))
+			if (!payload) return
 
-      {/* Movie Grid */}
-      <div className="movie-grid">
-        {(activeTab === "nowShowing" ? nowShowingMovies : comingSoonMovies).map(
-          (movie) => (
-            <div
-              key={movie.id}
-              className="movie-card"
-              onClick={() => handleMovieClick(movie)}
-            >
-              <img
-                src={movie.poster}
-                alt={movie.title}
-                className="movie-poster"
-              />
-              <div className="movie-info">
-                <h3 className="movie-title">{movie.title}</h3>
-                <div className="movie-details">
-                  <p>Thời lượng: {movie.duration}</p>
-                  <p>Thể loại: {movie.genre}</p>
-                  {movie.status === "nowShowing" }
-                </div>
-              </div>
-            </div>
-          )
-        )}
-      </div>
-    </div>
-  );
-};
+			const now = payload.items.filter(m => new Date(m.release_date) <= today)
+			const soon = payload.items.filter(m => new Date(m.release_date) > today)
 
-export default Booking;
+			setNowShowing(prev => {
+				const newMovies = now.filter(m => !prev.some(e => e.movie_id === m.movie_id))
+				return [...prev, ...newMovies]
+			})
+
+			setComingSoon(prev => {
+				const newMovies = soon.filter(m => !prev.some(e => e.movie_id === m.movie_id))
+				return [...prev, ...newMovies]
+			})
+
+			if (payload.items.length === 0) setDone(true)
+		}
+
+		fetchMovies()
+	}, [page, dispatch])
+
+	const handleMovieClick = movie => {
+		navigate(`/booking/${movie.movie_id}`)
+	}
+
+	const renderMovieGrid = movies => (
+		<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+			{movies.map(movie => (
+				<div
+					key={movie.movie_id}
+					className="bg-gray-800 rounded-xl shadow-md overflow-hidden cursor-pointer group"
+					onClick={() => handleMovieClick(movie)}
+				>
+					<div className="w-full aspect-[2/3] overflow-hidden">
+						<img
+							src={movie.poster_url}
+							alt={movie.title}
+							className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+						/>
+					</div>
+					<div className="p-4 text-white">
+						<h3 className="text-lg font-bold text-yellow-400">{movie.title}</h3>
+						<p className="text-sm">
+							{movie.duration} phút • {movie.release_date}
+						</p>
+					</div>
+				</div>
+			))}
+		</div>
+	)
+
+	return (
+		<div className="container mx-auto px-4 py-8 text-white">
+			{/* Steps */}
+			<div className="flex justify-between mb-6">
+				{['Chọn rạp', 'Chọn phim', 'Chọn ngày', 'Chọn suất'].map((step, index) => (
+					<div key={step} className="text-center">
+						<div className="w-10 h-10 rounded-full bg-yellow-500 text-black font-bold flex items-center justify-center mx-auto mb-2">
+							{index + 1}
+						</div>
+						<p className="text-black">{step}</p>
+					</div>
+				))}
+			</div>
+
+			{/* Tabs */}
+			<div className="flex border-b border-gray-700 mb-6">
+				<button
+					className={`flex-1 px-6 py-4 text-2xl font-bold ${
+						activeTab === 'nowShowing'
+							? 'border-b-4 border-yellow-400 text-yellow-400'
+							: 'text-gray-400 hover:text-white'
+					}`}
+					onClick={() => setActiveTab('nowShowing')}
+				>
+					Phim Đang Chiếu
+				</button>
+				<button
+					className={`flex-1 px-6 py-4 text-2xl font-bold ${
+						activeTab === 'comingSoon'
+							? 'border-b-4 border-yellow-400 text-yellow-400'
+							: 'text-gray-400 hover:text-white'
+					}`}
+					onClick={() => setActiveTab('comingSoon')}
+				>
+					Phim Sắp Chiếu
+				</button>
+			</div>
+
+			{/* Movie Grid */}
+			{renderMovieGrid(activeTab === 'nowShowing' ? nowShowing : comingSoon)}
+
+			{!done && (
+				<div className="text-center mt-6">
+					<button
+						onClick={() => setPage(p => p + 1)}
+						disabled={status === 'loading'}
+						className="bg-primary text-white px-6 py-3 rounded-md text-lg font-semibold hover:bg-primary/80 disabled:opacity-50"
+					>
+						{status === 'loading' ? 'Đang tải...' : 'Tải thêm'}
+					</button>
+				</div>
+			)}
+		</div>
+	)
+}
+
+export default Booking
