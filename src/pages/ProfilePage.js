@@ -13,6 +13,8 @@ import {
 } from '../redux/Slices/User/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import toast from 'react-hot-toast'
+import ImagetoBase64 from '../utils/ImagetoBase64'
+import { UploadImage } from '../components/UploadImage'
 
 const ProfilePage = () => {
 	const navigate = useNavigate()
@@ -200,11 +202,32 @@ const ProfilePage = () => {
 	}
 
 	const handleAvatarChange = e => {
+		e.preventDefault()
+
 		const file = e.target.files[0]
 		if (file) {
 			const reader = new FileReader()
 			reader.onloadend = () => setAvatarPreview(reader.result)
 			reader.readAsDataURL(file)
+
+			ImagetoBase64(file).then(async result => {
+				const data = await UploadImage(result)
+
+				if (data.data.secure_url) {
+					await dispatch(
+						updateUserAsync({
+							avatarUrl: data.data.secure_url,
+						})
+					)
+						.unwrap()
+						.then(_ => {
+							toast.success('Cập nhật ảnh đại diện thành công')
+						})
+						.catch(_ => {
+							toast.error('Cập nhật ảnh đại diện thất bại')
+						})
+				}
+			})
 		}
 	}
 
@@ -223,7 +246,7 @@ const ProfilePage = () => {
 	const breadcrumbItems = [
 		{ label: 'Tài khoản', path: '/profile' },
 		{
-			label: selectedTab === 'info' ? 'Thông tin khách hàng' : 'Thành viên BookingCinema',
+			label: selectedTab === 'info' ? 'Thông tin khách hàng' : 'Ví',
 			path: selectedTab === 'info' ? '/profile' : '/profile?tab=member',
 		},
 	]
@@ -250,8 +273,12 @@ const ProfilePage = () => {
 							className="w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow cursor-pointer"
 							onClick={handleAvatarClick}
 						>
-							{avatarPreview ? (
-								<img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
+							{avatarPreview || userInfo?.avatarUrl ? (
+								<img
+									src={avatarPreview || userInfo?.avatarUrl}
+									alt="Avatar"
+									className="w-full h-full object-cover"
+								/>
 							) : (
 								<div className="w-full h-full flex items-center justify-center bg-gray-300 text-black text-sm">
 									<FaUser className="text-2xl" />
@@ -297,11 +324,11 @@ const ProfilePage = () => {
 							} hover:text-yellow-300 ${
 								selectedTab === 'member' ? 'text-yellow-400 font-semibold' : ''
 							}`}
-							title="Thành viên BookingCinema"
+							title="Ví"
 							onClick={() => handleTabChange('member')}
 						>
 							<FaStar className={isCollapsed ? 'mx-auto' : ''} />
-							{!isCollapsed && <span>Thành viên BookingCinema</span>}
+							{!isCollapsed && <span>Ví</span>}
 						</button>
 						<button
 							className={`flex items-center w-full ${

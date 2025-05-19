@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { createBooking } from '../redux/Slices/Booking/bookingSlice'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+	getUserWalletAsync,
+	selectUserInfo,
+	selectUserWallet,
+	updateUserWalletAsync,
+} from '../redux/Slices/User/userSlice'
+import { createTransaction } from '../redux/Slices/Transaction/transactionSlice'
 
 const Checkout = () => {
 	const location = useLocation()
 	const navigate = useNavigate()
 	const user = true
+
 	const {
 		cart = [],
 		totalPrice = 0,
@@ -18,6 +26,14 @@ const Checkout = () => {
 	} = location.state || {}
 	const [paymentMethod, setPaymentMethod] = useState('')
 	const dispatch = useDispatch()
+	const userInfo = useSelector(selectUserInfo)
+	const wallet = useSelector(selectUserWallet)
+
+	useEffect(() => {
+		if (userInfo?.data?.user_id) {
+			dispatch(getUserWalletAsync(userInfo.data.user_id))
+		}
+	}, [userInfo, dispatch])
 
 	useEffect(() => {
 		if (!location.state || !selectedMovie || selectedSeats.length === 0) {
@@ -38,7 +54,6 @@ const Checkout = () => {
 		}
 
 		if (!user) {
-			// Lưu thông tin đặt vé vào localStorage để sau khi đăng nhập có thể quay lại
 			localStorage.setItem(
 				'pendingCheckout',
 				JSON.stringify({
@@ -58,14 +73,30 @@ const Checkout = () => {
 			return
 		}
 		const seatIds = selectedSeats.map(seat => seat.seat_id)
-		console.log(seatIds, totalPrice)
+
 		dispatch(
 			createBooking({
 				showtimeId: selectedTime?.showtime_id,
 				seatIds,
 				totalPrice,
 			})
-		).then(() => {
+		).then(result => {
+			// if (paymentMethod === 'wallet' && userInfo?.data?.user_id) {
+			// 	dispatch(
+			// 		updateUserWalletAsync({
+			// 			userId: userInfo.data.user_id,
+			// 			walletUpdate: { balance: wallet?.balance - totalPrice },
+			// 		})
+			// 	)
+			// }
+			dispatch(
+				createTransaction({
+					booking_id: result?.payload?.booking_id,
+					amount: result?.payload?.total_price,
+					method: paymentMethod,
+				})
+			)
+
 			navigate('/checkout-success', {
 				state: {
 					cart,
@@ -163,7 +194,7 @@ const Checkout = () => {
 					<div className="mb-6">
 						<h3 className="text-lg font-semibold mb-2">Chọn phương thức thanh toán:</h3>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-							{['Visa/Mastercard', 'Momo', 'VNPay', 'COD'].map(method => (
+							{['credit_card', 'paypal', 'bank_transfer'].map(method => (
 								<label
 									key={method}
 									className="flex items-center space-x-2 cursor-pointer bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition-colors"
@@ -178,6 +209,24 @@ const Checkout = () => {
 									<span>{method}</span>
 								</label>
 							))}
+
+							{wallet?.balance >= totalPrice ? (
+								<label className="flex items-center space-x-2 cursor-pointer bg-gray-700 p-3 rounded-lg hover:bg-gray-600 transition-colors">
+									<input
+										type="radio"
+										name="payment"
+										value="wallet"
+										onChange={() => setPaymentMethod('wallet')}
+										className="form-radio text-blue-500"
+									/>
+									<span>{`Ví (${wallet.balance.toLocaleString()}đ)`}</span>
+								</label>
+							) : (
+								<div className="bg-red-500/20 text-red-400 px-4 py-3 rounded-lg">
+									Số dư ví hiện tại ({wallet?.balance?.toLocaleString() || 0}đ) không đủ để thanh
+									toán.
+								</div>
+							)}
 						</div>
 					</div>
 

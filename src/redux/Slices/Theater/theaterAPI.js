@@ -33,3 +33,7 @@ export function getTheatersByShowtimeIdsAPI(showtimeIds = []) {
 		}
 	})
 }
+
+export function getTheaterByIdAPI(theaterId) {
+	return axios.get(`http://localhost:3051/v1/theaters/${theaterId}`, { withCredentials: true })
+}

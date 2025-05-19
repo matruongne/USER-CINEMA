@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { getTheatersAPI, getTheatersByShowtimeIdsAPI } from './theaterAPI'
+import { getTheatersAPI, getTheatersByShowtimeIdsAPI, getTheaterByIdAPI } from './theaterAPI'
 
 const initialState = {
 	theaters: [],
 	theatersByShowtimeIds: [],
 	status: 'idle',
 	error: null,
+	selectedTheater: null,
 	pagination: {
 		currentPage: 1,
 		totalPages: 1,
@@ -30,6 +31,18 @@ export const getTheatersByShowtimeIds = createAsyncThunk(
 	async (showtimeIds, { rejectWithValue }) => {
 		try {
 			const response = await getTheatersByShowtimeIdsAPI(showtimeIds)
+			return response.data
+		} catch (error) {
+			return rejectWithValue(error.response?.data || error.message)
+		}
+	}
+)
+
+export const getTheaterById = createAsyncThunk(
+	'theater/getTheaterById',
+	async (theaterId, { rejectWithValue }) => {
+		try {
+			const response = await getTheaterByIdAPI(theaterId)
 			return response.data
 		} catch (error) {
 			return rejectWithValue(error.response?.data || error.message)
@@ -70,6 +83,18 @@ const theaterSlice = createSlice({
 				state.status = 'failed'
 				state.error = action.payload
 			})
+			.addCase(getTheaterById.pending, state => {
+				state.status = 'loading'
+				state.selectedTheater = null
+			})
+			.addCase(getTheaterById.fulfilled, (state, { payload }) => {
+				state.status = 'succeeded'
+				state.selectedTheater = payload
+			})
+			.addCase(getTheaterById.rejected, (state, { payload }) => {
+				state.status = 'failed'
+				state.error = payload
+			})
 	},
 })
 
@@ -77,5 +102,6 @@ export const selectTheaters = state => state.theater.theaters
 export const selectTheaterStatus = state => state.theater.status
 export const selectTheaterPagination = state => state.theater.pagination
 export const selectTheatersByShowtimeId = state => state.theater.theatersByShowtimeIds
+export const selectSelectedTheater = state => state.theater.selectedTheater
 
 export default theaterSlice.reducer

@@ -97,7 +97,6 @@ const MoviesList = () => {
 
 				const filtered = payload.items.filter(m => new Date(m.release_date) > new Date())
 
-				// ❗ Loại bỏ phim đã nằm trong nowShowing
 				const uniqueFiltered = filtered.filter(
 					m => !nowShowing.some(n => n.movie_id === m.movie_id)
 				)

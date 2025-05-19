@@ -7,6 +7,8 @@ import screenReducer from './Slices/Screen/screenSlice'
 import showtimeReducer from './Slices/Showtime/showtimeSlice'
 import bookingReducer from './Slices/Booking/bookingSlice'
 import seatReducer from './Slices/Seat/seatSlice'
+import promotionReducer from './Slices/Promotion/promotionSlice'
+import entertainmentReducer from './Slices/Entertainment/entertainmentSlice'
 
 export const store = configureStore({
 	reducer: {
@@ -18,5 +20,7 @@ export const store = configureStore({
 		seat: seatReducer,
 		showtime: showtimeReducer,
 		booking: bookingReducer,
+		promotion: promotionReducer,
+		entertainment: entertainmentReducer,
 	},
 })

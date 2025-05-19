@@ -1,5 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { getAllMoviesAPI, getMovieByIdAPI, getNowShowingMoviesByTheaterAPI } from './movieAPI'
+import {
+	getAllMoviesAPI,
+	getMovieByIdAPI,
+	getNowShowingMoviesByTheaterAPI,
+	getNowShowingMoviesByTheaterGroupedAPI,
+	searchMoviesAPI,
+} from './movieAPI'
 
 const initialState = {
 	movies: [],
@@ -12,6 +18,7 @@ const initialState = {
 		totalItems: 0,
 	},
 	nowShowingMovies: [],
+	searchResults: [],
 }
 
 export const getAllMoviesAsync = createAsyncThunk(
@@ -50,10 +57,38 @@ export const getNowShowingMoviesByTheaterAsync = createAsyncThunk(
 	}
 )
 
+export const getNowShowingMoviesByTheaterGroupedAsync = createAsyncThunk(
+	'movie/getNowShowingMoviesByTheaterGrouped',
+	async (theaterId, { rejectWithValue }) => {
+		try {
+			const response = await getNowShowingMoviesByTheaterGroupedAPI(theaterId)
+			return response.data
+		} catch (error) {
+			return rejectWithValue(error.response?.data || error.message)
+		}
+	}
+)
+
+export const searchMoviesAsync = createAsyncThunk(
+	'movie/searchMovies',
+	async (keyword, { rejectWithValue }) => {
+		try {
+			const response = await searchMoviesAPI(keyword)
+			return response.data
+		} catch (error) {
+			return rejectWithValue(error.response?.data || error.message)
+		}
+	}
+)
+
 const movieSlice = createSlice({
 	name: 'movie',
 	initialState,
-	reducers: {},
+	reducers: {
+		clearSearchResults: state => {
+			state.searchResults = []
+		},
+	},
 	extraReducers: builder => {
 		builder
 			.addCase(getAllMoviesAsync.pending, state => {
@@ -94,6 +129,17 @@ const movieSlice = createSlice({
 				state.status = 'failed'
 				state.error = action.payload
 			})
+			.addCase(searchMoviesAsync.pending, state => {
+				state.status = 'loading'
+			})
+			.addCase(searchMoviesAsync.fulfilled, (state, action) => {
+				state.status = 'succeeded'
+				state.searchResults = action.payload
+			})
+			.addCase(searchMoviesAsync.rejected, (state, action) => {
+				state.status = 'failed'
+				state.error = action.payload
+			})
 	},
 })
 
@@ -103,5 +149,7 @@ export const selectMoviePagination = state => state.movie.pagination
 export const selectMovieError = state => state.movie.error
 export const selectSelectedMovie = state => state.movie.selectedMovie
 export const selectNowShowingMovies = state => state.movie.nowShowingMovies
+export const selectSearchResults = state => state.movie.searchResults
+export const { clearSearchResults } = movieSlice.actions
 
 export default movieSlice.reducer

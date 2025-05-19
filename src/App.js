@@ -26,6 +26,7 @@ import Signin from './pages/SignIn'
 import SignUp from './pages/SignUp'
 import ProtectedRoute from './components/ProtectedRoute'
 import Verify from './pages/Verify'
+import ScrollToTop from './components/ScrollToTop'
 
 const App = () => {
 	return (
@@ -33,6 +34,7 @@ const App = () => {
 			<div className="bg-bgColor min-h-screen text-white flex flex-col">
 				<Header />
 				<div className="flex-grow relative z-10 min-h-[600px] bg-gray-100">
+					<ScrollToTop />
 					<Routes>
 						{/* Public routes */}
 						<Route path="/signin" element={<Signin />} />

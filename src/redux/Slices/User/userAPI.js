@@ -98,3 +98,15 @@ export function updateUserRole({ targetUserId, roleId }) {
 			})
 	})
 }
+
+export function getUserWallet(userId) {
+	return axios.get(`http://localhost:3051/v1/wallet/${userId}`, {
+		withCredentials: true,
+	})
+}
+
+export function updateUserWallet(userId, walletUpdate) {
+	return axios.patch(`http://localhost:3051/v1/wallet/${userId}`, walletUpdate, {
+		withCredentials: true,
+	})
+}

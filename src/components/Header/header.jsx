@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { Search, User } from 'lucide-react'
+import { User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { checkAuthAsync, selectUserChecked } from '../../redux/Slices/Auth/authSlice'
 import { getTheaters, selectTheaters } from '../../redux/Slices/Theater/theaterSlice'
+import MovieSearchBar from '../MovieSearchBar'
 
 const Header = () => {
 	const [isCinemaOpen, setIsCinemaOpen] = useState(false)
+
 	const dispatch = useDispatch()
 
 	const user = useSelector(selectUserChecked)
@@ -59,7 +61,6 @@ const Header = () => {
 	return (
 		<header className="bg-bgColor text-white p-4 shadow-md relative z-50">
 			<div className="container mx-auto flex items-center justify-between">
-				{/* Logo */}
 				<div className="flex items-center">
 					<Link to="/">
 						<img
@@ -71,21 +72,8 @@ const Header = () => {
 					</Link>
 				</div>
 
-				{/* Search Bar */}
-				<div className="relative w-1/3">
-					<input
-						type="text"
-						placeholder="Tìm phim, rạp"
-						className="w-full px-4 py-2 rounded-full bg-primary outline-none text-black"
-					/>
-					<button className="p-2 bg-secondary absolute w-[40px] h-[40px] rounded-r-full right-0 top-0 hover:bg-secondary/80">
-						<Search className=" text-white" size={18} />
-					</button>
-				</div>
-
-				{/* Actions */}
+				<MovieSearchBar />
 				<div className="flex items-center gap-4">
-					{/* Nút đặt bắp nước */}
 					{/* <button
 						onClick={() => navigate('/food')}
 						className="bg-primary text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary/60"
@@ -93,7 +81,6 @@ const Header = () => {
 						ĐẶT BẮP NƯỚC
 					</button> */}
 
-					{/* Nút đặt vé */}
 					<button
 						onClick={() => navigate('/booking')}
 						className="bg-secondary text-white font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:bg-secondary/60"
@@ -127,15 +114,12 @@ const Header = () => {
 				</div>
 			</div>
 
-			{/* Navigation */}
 			<nav className="container mx-auto mt-4 flex justify-center gap-6 text-gray-400">
-				{/* Chọn Rạp - Dropdown */}
 				<div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
 					<button className="flex items-center gap-2 hover:text-primary text-white">
 						📍 Chọn rạp
 					</button>
 
-					{/* Dropdown danh sách rạp */}
 					{isCinemaOpen && (
 						<div className="absolute left-0 top-full bg-bgColor border border-gray-700 shadow-lg rounded-md p-4 w-[600px] mt-2 z-50">
 							<div className="grid grid-cols-2 gap-4">

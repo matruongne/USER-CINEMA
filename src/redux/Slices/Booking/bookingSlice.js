@@ -1,5 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { createBookingAPI, holdSeatsAPI, removeHoldSeatAPI } from './bookingAPI'
+import {
+	createBookingAPI,
+	holdSeatsAPI,
+	removeHoldSeatAPI,
+	getBookingHistoryAPI,
+	cancelBookingAPI,
+} from './bookingAPI'
 import { toast } from 'react-hot-toast'
 
 export const holdSeats = createAsyncThunk(
@@ -44,6 +50,30 @@ export const createBooking = createAsyncThunk(
 	}
 )
 
+export const getBookingHistory = createAsyncThunk(
+	'booking/getBookingHistory',
+	async (_, { rejectWithValue }) => {
+		try {
+			const res = await getBookingHistoryAPI()
+			return res.data
+		} catch (err) {
+			return rejectWithValue(err.response?.data || err.message)
+		}
+	}
+)
+
+export const cancelBooking = createAsyncThunk(
+	'booking/cancel',
+	async (bookingId, { rejectWithValue }) => {
+		try {
+			const res = await cancelBookingAPI(bookingId)
+			return { bookingId, ...res.data }
+		} catch (err) {
+			return rejectWithValue(err.response?.data || err.message)
+		}
+	}
+)
+
 const bookingSlice = createSlice({
 	name: 'booking',
 	initialState: {
@@ -52,6 +82,11 @@ const bookingSlice = createSlice({
 		status: 'idle',
 		error: null,
 		newBooking: null,
+		bookingHistory: {
+			completed: [],
+			canceled: [],
+			pending: [],
+		},
 	},
 	reducers: {},
 	extraReducers: builder => {
@@ -84,7 +119,27 @@ const bookingSlice = createSlice({
 				const { seatId } = action.payload
 				state.heldSeats = state.heldSeats.filter(seat => seat.seat_id !== seatId)
 			})
+			.addCase(getBookingHistory.pending, state => {
+				state.status = 'loading'
+				state.error = null
+			})
+			.addCase(getBookingHistory.fulfilled, (state, action) => {
+				state.status = 'succeeded'
+				state.bookingHistory = action.payload
+			})
+			.addCase(getBookingHistory.rejected, (state, action) => {
+				state.status = 'failed'
+				state.error = action.payload
+			})
+			.addCase(cancelBooking.fulfilled, (state, action) => {
+				toast.success('Hủy thành công')
+			})
+			.addCase(cancelBooking.rejected, (state, action) => {
+				toast.error(`Hủy thất bại: ${action.payload.message || action.payload}`)
+			})
 	},
 })
+
+export const selectBookingHistory = state => state.booking.bookingHistory
 
 export default bookingSlice.reducer

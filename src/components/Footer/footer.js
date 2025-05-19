@@ -1,13 +1,38 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Facebook, Instagram, Youtube } from 'lucide-react'
 import { FaTiktok } from 'react-icons/fa'
+import { getTheaters, selectTheaters } from '../../redux/Slices/Theater/theaterSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
 const Footer = () => {
+	const dispatch = useDispatch()
+
+	useEffect(() => {
+		dispatch(getTheaters({}))
+	}, [dispatch])
+
+	const allTheaters = useSelector(selectTheaters)
+
+	function createSlug(cinema) {
+		const { name, theater_id } = cinema
+
+		let slug = name
+			.normalize('NFD')
+			.replace(/[\u0300-\u036f]/g, '')
+			.replace(/đ/g, 'd')
+			.replace(/Đ/g, 'D')
+			.toLowerCase()
+			.trim()
+
+			.replace(/[^a-z0-9\s-]/g, ' ')
+			.replace(/[\s-]+/g, '-')
+		return `${slug}-${theater_id}`
+	}
+
 	return (
 		<footer className="bg-gradient-to-r from-[#a82bf5] to-[#2b0b61] text-white py-10">
 			<div className="container mx-auto px-8">
-				{/* Logo + Nút đặt vé */}
 				<div className="text-center mb-8">
 					<img src="/logo.png" alt="BookingCinema Logo" className="mx-auto h-36" />
 					<p className="text-lg font-semibold mt-2">BE HAPPY, BE A STAR</p>
@@ -18,18 +43,16 @@ const Footer = () => {
 						>
 							ĐẶT VÉ
 						</Link>
-						<Link
+						{/* <Link
 							to="/food"
 							className="border-2 border-[#FFD700] text-[#FFD700] font-bold px-6 py-2 rounded-md hover:bg-[#FFD700] hover:text-black transition"
 						>
 							ĐẶT BẮP NƯỚC
-						</Link>
+						</Link> */}
 					</div>
 				</div>
 
-				{/* Nội dung chính của footer */}
 				<div className="grid grid-cols-5 gap-8">
-					{/* Cột 1 - Tài khoản */}
 					<div>
 						<h3 className="text-lg font-bold mb-3">TÀI KHOẢN</h3>
 						<ul className="space-y-2">
@@ -51,7 +74,6 @@ const Footer = () => {
 						</ul>
 					</div>
 
-					{/* Cột 2 - Thuê sự kiện */}
 					<div>
 						<h3 className="text-lg font-bold mb-3">THUÊ SỰ KIỆN</h3>
 						<ul className="space-y-2">
@@ -68,7 +90,6 @@ const Footer = () => {
 						</ul>
 					</div>
 
-					{/* Cột 3 - Xem phim */}
 					<div>
 						<h3 className="text-lg font-bold mb-3">XEM PHIM</h3>
 						<ul className="space-y-2">
@@ -90,7 +111,6 @@ const Footer = () => {
 						</ul>
 					</div>
 
-					{/* Cột 4 - Dịch vụ khác */}
 					<div>
 						<h3 className="text-lg font-bold mb-3">DỊCH VỤ KHÁC</h3>
 						<ul className="space-y-2">
@@ -104,60 +124,20 @@ const Footer = () => {
 						</ul>
 					</div>
 
-					{/* Cột 5 - Hệ thống rạp */}
 					<div>
 						<h3 className="text-lg font-bold mb-3">HỆ THỐNG RẠP</h3>
 						<ul className="space-y-2">
-							<li>
-								<Link to="/showtime" className="hover:text-yellow-300">
-									Tất cả hệ thống rạp
-								</Link>
-							</li>
-							<li>
-								<Link to="/showtime/bookingcinema-quoc-thanh" className="hover:text-yellow-300">
-									BookingCinema Quốc Thanh (TP.HCM)
-								</Link>
-							</li>
-							<li>
-								<Link to="/showtime/bookingcinema-hai-ba-trung" className="hover:text-yellow-300">
-									BookingCinema Hai Bà Trưng (TP.HCM)
-								</Link>
-							</li>
-							<li>
-								<Link to="/showtime/bookingcinema-sinh-vien" className="hover:text-yellow-300">
-									BookingCinema Sinh Viên (Bình Dương)
-								</Link>
-							</li>
-							<li>
-								<Link to="/showtime/bookingcinema-my-tho" className="hover:text-yellow-300">
-									BookingCinema Mỹ Tho (Tiền Giang)
-								</Link>
-							</li>
-							<li>
-								<Link to="/showtime/bookingcinema-kien-giang" className="hover:text-yellow-300">
-									BookingCinema Kiên Giang (Rạch Sỏi)
-								</Link>
-							</li>
-							<li>
-								<Link to="/showtime/bookingcinema-lam-dong" className="hover:text-yellow-300">
-									BookingCinema Lâm Đồng (Đức Trọng)
-								</Link>
-							</li>
-							<li>
-								<Link to="/showtime/bookingcinema-da-lat" className="hover:text-yellow-300">
-									BookingCinema Đà Lạt (TP. Đà Lạt)
-								</Link>
-							</li>
-							<li>
-								<Link to="/showtime/bookingcinema-hue" className="hover:text-yellow-300">
-									BookingCinema Huế (TP. Huế)
-								</Link>
-							</li>
+							{allTheaters?.map(theater => (
+								<li key={theater.theater_id}>
+									<Link to={`/showtime/${createSlug(theater)}`} className="hover:text-yellow-300">
+										{theater.name}
+									</Link>
+								</li>
+							))}
 						</ul>
 					</div>
 				</div>
 
-				{/* Social Media */}
 				<div className="text-center mt-10">
 					<div className="flex justify-center gap-6">
 						<Link to="#" className="text-2xl hover:text-yellow-300">
@@ -175,7 +155,6 @@ const Footer = () => {
 					</div>
 				</div>
 
-				{/* Chính sách & Copyright */}
 				<div className="text-center mt-10 border-t border-gray-700 pt-4">
 					<p className="text-sm">© 2023 BookingCinema. All rights reserved.</p>
 					<div className="flex justify-center gap-6 mt-2 text-sm">

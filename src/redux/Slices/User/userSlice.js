@@ -7,11 +7,15 @@ import {
 	getAllRoles,
 	updatePassword,
 	updateUserAddress,
+	getUserWallet,
+	updateUserWallet,
 } from './userAPI'
 
 const initialState = {
 	status: 'idle',
 	userInfo: null,
+	wallet: null,
+	walletStatus: 'idle',
 	listUsers: [],
 	roles: [],
 }
@@ -55,6 +59,30 @@ export const getlistUsersAsync = createAsyncThunk('user/getlistUsers', async () 
 
 	return response.data
 })
+
+export const getUserWalletAsync = createAsyncThunk(
+	'user/getUserWallet',
+	async (userId, { rejectWithValue }) => {
+		try {
+			const response = await getUserWallet(userId)
+			return response.data.data
+		} catch (error) {
+			return rejectWithValue(error.response?.data || error.message)
+		}
+	}
+)
+
+export const updateUserWalletAsync = createAsyncThunk(
+	'user/updateUserWallet',
+	async ({ userId, walletUpdate }, { rejectWithValue }) => {
+		try {
+			const response = await updateUserWallet(userId, walletUpdate)
+			return response.data.data
+		} catch (error) {
+			return rejectWithValue(error.response?.data || error.message)
+		}
+	}
+)
 
 export const getAllRolesAsync = createAsyncThunk(
 	'user/getAllRoles',
@@ -134,6 +162,28 @@ export const userSlice = createSlice({
 				state.status = 'failed'
 				state.error = action.payload
 			})
+			.addCase(getUserWalletAsync.pending, state => {
+				state.walletStatus = 'loading'
+			})
+			.addCase(getUserWalletAsync.fulfilled, (state, action) => {
+				state.walletStatus = 'succeeded'
+				state.wallet = action.payload
+			})
+			.addCase(getUserWalletAsync.rejected, (state, action) => {
+				state.walletStatus = 'failed'
+				state.error = action.payload
+			})
+			.addCase(updateUserWalletAsync.pending, state => {
+				state.walletStatus = 'loading'
+			})
+			.addCase(updateUserWalletAsync.fulfilled, (state, action) => {
+				state.walletStatus = 'succeeded'
+				state.wallet = action.payload
+			})
+			.addCase(updateUserWalletAsync.rejected, (state, action) => {
+				state.walletStatus = 'failed'
+				state.error = action.payload
+			})
 	},
 })
 
@@ -141,5 +191,7 @@ export const selectUserInfo = state => state.user.userInfo
 export const selectUserInfoStatus = state => state.user.status
 export const selectListUsers = state => state.user.listUsers
 export const selectRoles = state => state.user.roles
+export const selectUserWallet = state => state.user.wallet
+export const selectWalletStatus = state => state.user.walletStatus
 
 export default userSlice.reducer

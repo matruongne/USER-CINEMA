@@ -21,3 +21,13 @@ export function removeHoldSeatAPI(showtimeId, seatId) {
 		{ withCredentials: true }
 	)
 }
+
+export function getBookingHistoryAPI() {
+	return axios.get(`${BASE_URL}/bookings/own/`, {
+		withCredentials: true,
+	})
+}
+
+export function cancelBookingAPI(bookingId) {
+	return axios.post(`${BASE_URL}/bookings/cancel/${bookingId}`, {}, { withCredentials: true })
+}

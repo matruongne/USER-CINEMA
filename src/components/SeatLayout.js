@@ -52,7 +52,6 @@ const SeatLayout = ({
 											const isSelected = selectedSeats?.some(s => s.seat_id === seatId)
 
 											const isDisabled = isBooked || (isHeld && !isSelected)
-											console.log(seats)
 											return (
 												<button
 													key={seat}

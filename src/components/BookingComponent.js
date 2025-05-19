@@ -1,45 +1,51 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 const BookingComponent = ({ selectedSeats, setSelectedSeats }) => {
-	const [timeLeft, setTimeLeft] = useState(330) // Thời gian giữ vé mặc định là 5 phút 30 giây (330 giây)
-	const [intervalId, setIntervalId] = useState(null)
+	const [timeLeft, setTimeLeft] = useState(330)
+	const intervalRef = useRef(null)
+	const prevSeatCount = useRef(0)
 
-	// Giảm thời gian mỗi giây
+	// Khi có ghế được chọn lần đầu
 	useEffect(() => {
-		// Nếu có ghế được chọn, bắt đầu đếm ngược
-		if (selectedSeats.length > 0 && !intervalId) {
-			const id = setInterval(() => {
-				setTimeLeft(prevTime => {
-					if (prevTime > 0) return prevTime - 1
-					clearInterval(id) // Dừng đếm ngược khi thời gian hết
-					setSelectedSeats([]) // Reset ghế đã chọn
-					return 0
-				})
-			}, 1000)
-			setIntervalId(id)
+		if (selectedSeats.length > 0 && prevSeatCount.current === 0) {
+			setTimeLeft(330)
+			startTimer()
 		}
-
-		// Nếu không còn ghế chọn, dừng đếm ngược
-		return () => {
-			if (intervalId) clearInterval(intervalId)
+		if (selectedSeats.length === 0 && intervalRef.current) {
+			clearInterval(intervalRef.current)
+			intervalRef.current = null
+			setTimeLeft(330)
 		}
-	}, [selectedSeats, intervalId, setSelectedSeats])
-
-	// Reset thời gian khi người dùng chọn thêm ghế
-	useEffect(() => {
-		if (selectedSeats.length > 0) {
-			setTimeLeft(330) // Reset lại thời gian giữ vé (5 phút 30 giây)
-			if (intervalId) clearInterval(intervalId) // Xóa interval cũ
-			setIntervalId(null) // Reset lại intervalId để tạo một interval mới
-		}
+		prevSeatCount.current = selectedSeats.length
 	}, [selectedSeats])
 
-	// Định dạng hiển thị thời gian (mm:ss)
+	const startTimer = () => {
+		if (intervalRef.current) clearInterval(intervalRef.current)
+
+		intervalRef.current = setInterval(() => {
+			setTimeLeft(prev => {
+				if (prev <= 1) {
+					clearInterval(intervalRef.current)
+					intervalRef.current = null
+					setSelectedSeats([])
+					return 0
+				}
+				return prev - 1
+			})
+		}, 1000)
+	}
+
 	const formatTime = time => {
 		const minutes = Math.floor(time / 60)
 		const seconds = time % 60
 		return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 	}
+
+	useEffect(() => {
+		return () => {
+			if (intervalRef.current) clearInterval(intervalRef.current)
+		}
+	}, [])
 
 	return (
 		<div>
